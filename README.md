@@ -1,96 +1,238 @@
-
 # SIMPA - Sistem Informasi Manajemen Pemeliharaan AC
 
-**SIMPA** adalah aplikasi yang dirancang untuk membantu CV Suralaya dalam mengelola dan mencatat hasil pemeliharaan unit AC. Sistem ini memungkinkan pengguna untuk mencatat informasi tentang proyek pemeliharaan, kondisi unit AC, serta hasil pembersihan baik pada bagian indoor maupun outdoor. Pengguna juga dapat mengunggah foto kondisi AC sebelum dan sesudah perawatan dilakukan.
+<div align="center">
 
-## Teknologi yang Digunakan
+![SIMPA Logo](logo.png)
 
-- **Backend:** NestJS (Framework Node.js)
-- **Frontend:** React (Vite)
+[![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)](https://nestjs.com/)
+[![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
+[![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+
+</div>
+
+## 📖 Deskripsi
+
+**SIMPA** (Sistem Informasi Manajemen Pemeliharaan AC) adalah aplikasi komprehensif yang dikembangkan untuk CV Suralaya, dirancang khusus untuk mengoptimalkan proses manajemen dan pemeliharaan unit AC. Sistem ini menyediakan solusi end-to-end untuk pencatatan, pemantauan, dan pelaporan kegiatan pemeliharaan AC.
+
+### 🎯 Tujuan Utama
+- Meningkatkan efisiensi pencatatan dan pemantauan pemeliharaan AC
+- Menyediakan dokumentasi digital yang terstruktur
+- Memudahkan pelacakan riwayat pemeliharaan setiap unit AC
+- Mengoptimalkan pengelolaan jadwal pemeliharaan
+- Meningkatkan kualitas layanan melalui dokumentasi yang lebih baik
+
+## 🚀 Fitur Utama
+
+### 1. Manajemen Proyek
+- Pembuatan dan pengelolaan proyek pemeliharaan
+- Penjadwalan otomatis
+- Tracking progress proyek real-time
+- Notifikasi status proyek
+
+### 2. Manajemen Unit AC
+- Pencatatan detail spesifikasi unit AC
+- Pelacakan lokasi unit
+- Riwayat pemeliharaan komprehensif
+- Pengelolaan inventaris komponen
+
+### 3. Dokumentasi Pemeliharaan
+- Form digital pemeriksaan AC
+- Checklist pemeliharaan terstandar
+- Upload foto sebelum dan sesudah pemeliharaan
+- Catatan teknis dan rekomendasi
+
+### 4. Sistem Pelaporan
+- Dashboard analitik real-time
+- Laporan pemeliharaan berkala
+- Export data dalam berbagai format
+- Visualisasi data performa unit AC
+
+### 5. Manajemen Pengguna
+- Sistem role-based access control
+- Autentikasi JWT
+- Manajemen tim teknisi
+- Tracking aktivitas pengguna
+
+## 🛠️ Tech Stack
+
+### Backend
+- **Framework:** NestJS
 - **Database:** MySQL
-- **Authentication:** JWT & OAuth 2.0
-- **Storage:** Cloud Storage (untuk foto sebelum dan sesudah maintenance)
+- **ORM:** TypeORM
+- **Authentication:** JWT + Bcrypt
+- **API Documentation:** Swagger/OpenAPI
+- **Testing:** Jest
 
-## Fitur Utama
+### Frontend
+- **Framework:** React (Vite)
+- **State Management:** Redux Toolkit
+- **UI Components:** Material-UI
+- **Forms:** React Hook Form + Yup
+- **HTTP Client:** Axios
+- **Charts:** Recharts
 
-1. **Manajemen Proyek:** Memungkinkan pembuatan dan pengelolaan proyek pemeliharaan AC.
-2. **Pencatatan Unit AC:** Menyimpan data unit AC yang diperiksa dan dipelihara.
-3. **Pencatatan Hasil Pemeliharaan:** Mencatat kondisi unit AC, baik untuk bagian indoor maupun outdoor, beserta hasil pembersihan dan pemeriksaan.
-4. **Unggah Foto:** Mengunggah foto kondisi unit AC sebelum dan sesudah pemeliharaan.
-5. **Akses Pengguna:** Sistem akses berbasis role untuk pengguna (misalnya, admin, teknisi).
-6. **Dashboard:** Visualisasi status dan laporan pemeliharaan AC.
+### DevOps & Tools
+- **Version Control:** Git
+- **CI/CD:** GitHub Actions
+- **Containerization:** Docker
+- **Cloud Storage:** AWS S3
+- **Monitoring:** Sentry
 
-## Instalasi
+## 📦 Struktur Proyek
 
-### Backend (NestJS)
+```
+simpa/
+├── backend/
+│   ├── src/
+│   │   ├── auth/           # Autentikasi dan otorisasi
+│   │   ├── projects/       # Manajemen proyek
+│   │   ├── units/          # Manajemen unit AC
+│   │   ├── maintenance/    # Pencatatan pemeliharaan
+│   │   ├── users/          # Manajemen pengguna
+│   │   └── common/         # Shared utilities dan helpers
+│   ├── test/               # Unit dan integration tests
+│   └── docs/               # Dokumentasi API
+│
+├── frontend/
+│   ├── src/
+│   │   ├── components/     # Reusable components
+│   │   ├── pages/          # Halaman aplikasi
+│   │   ├── services/       # API services
+│   │   ├── store/          # State management
+│   │   └── utils/          # Helper functions
+│   ├── public/             # Asset statis
+│   └── tests/              # Unit tests
+│
+└── docs/                   # Dokumentasi proyek
+```
 
-1. Clone repository:
+## 🚀 Panduan Instalasi
+
+### Prasyarat
+- Node.js (v14 atau lebih baru)
+- MySQL (v8.0 atau lebih baru)
+- Git
+- npm atau yarn
+
+### Langkah Instalasi
+
+1. **Clone Repository**
    ```bash
-   git clone https://github.com/yourusername/simpa-backend.git
+   git clone https://github.com/Habiboys/SIMPA.git
+   cd SIMPA
    ```
-2. Install dependencies:
+
+2. **Setup Backend**
    ```bash
-   cd simpa-backend
+   cd backend
    npm install
-   ```
-3. Konfigurasi `.env` untuk koneksi ke database MySQL:
-   ```bash
-   DB_HOST=localhost
-   DB_PORT=3306
-   DB_USER=root
-   DB_PASSWORD=yourpassword
-   DB_NAME=simpa
-   ```
-4. Jalankan aplikasi:
-   ```bash
-   npm run start
+   
+   # Konfigurasi environment
+   cp .env.example .env
+   # Edit .env sesuai konfigurasi lokal
+   
+   # Jalankan migrations
+   npm run migration:run
+   
+   # Start development server
+   npm run start:dev
    ```
 
-### Frontend (React + Vite)
-
-1. Clone repository:
+3. **Setup Frontend**
    ```bash
-   git clone https://github.com/yourusername/simpa-frontend.git
-   ```
-2. Install dependencies:
-   ```bash
-   cd simpa-frontend
+   cd frontend
    npm install
-   ```
-3. Jalankan aplikasi:
-   ```bash
+   
+   # Konfigurasi environment
+   cp .env.example .env
+   # Edit .env sesuai kebutuhan
+   
+   # Start development server
    npm run dev
    ```
 
-## Struktur Direktori
+### Environment Variables
 
-### Backend
+#### Backend (.env)
+```env
+# Database
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=your_password
+DB_NAME=simpa_db
 
-- `src/` - Kode sumber aplikasi NestJS.
-  - `modules/` - Setiap fitur dipecah dalam modul.
-  - `controllers/` - Pengendali untuk menerima request dan mengembalikan response.
-  - `services/` - Layanan yang menangani logika aplikasi.
-  - `entities/` - Struktur tabel untuk MySQL.
-  
-### Frontend
+# JWT
+JWT_SECRET=your_jwt_secret
+JWT_EXPIRATION=24h
 
-- `src/` - Kode sumber aplikasi React.
-  - `components/` - Komponen-komponen yang digunakan di aplikasi.
-  - `pages/` - Halaman utama untuk UI.
-  - `services/` - Fungsi-fungsi untuk berkomunikasi dengan backend.
+# AWS S3
+AWS_ACCESS_KEY=your_access_key
+AWS_SECRET_KEY=your_secret_key
+AWS_BUCKET=your_bucket_name
+```
 
-## Cara Penggunaan
+#### Frontend (.env)
+```env
+VITE_API_URL=http://localhost:3000
+VITE_AWS_S3_URL=https://your-bucket.s3.region.amazonaws.com
+```
 
-1. Login sebagai pengguna dengan role tertentu (admin/teknisi).
-2. Tambahkan proyek dan unit AC.
-3. Lakukan pemeliharaan AC dan unggah foto kondisi sebelum dan sesudah perawatan.
-4. Periksa hasil pemeliharaan dan status unit AC.
-5. Pantau laporan melalui dashboard yang disediakan.
+## 📱 Fitur per Role Pengguna
 
-## Kontribusi
+### Admin
+- Manajemen pengguna dan role
+- Pembuatan dan pengelolaan proyek
+- Akses ke semua laporan dan analytics
+- Konfigurasi sistem
 
-Jika Anda tertarik untuk berkontribusi pada proyek ini, silakan fork repository dan buat pull request.
+### Admin Lapangan
+- Manajemen tim teknisi
+- Pencatatan hasil pemeliharaan
+- Upload dokumentasi foto
+- Akses ke laporan spesifik proyek
 
-## Lisensi
+## 🤝 Kontribusi
+
+Kami sangat menghargai kontribusi dari komunitas. Untuk berkontribusi:
+
+1. Fork repository
+2. Buat branch fitur (`git checkout -b feature/AmazingFeature`)
+3. Commit perubahan (`git commit -m 'Add some AmazingFeature'`)
+4. Push ke branch (`git push origin feature/AmazingFeature`)
+5. Buat Pull Request
+
+## 📝 Format Commit
+
+Format commit mengikuti [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+Contoh:
+- feat: menambahkan fitur upload foto
+- fix: memperbaiki bug di form login
+- docs: memperbarui dokumentasi API
+
+## 📄 Lisensi
 
 Proyek ini dilisensikan di bawah [MIT License](LICENSE).
+
+## 📞 Kontak
+
+- **Developer:** [Nama Anda]
+- **Email:** [Email Anda]
+- **Website:** [Website Anda]
+
+---
+
+<div align="center">
+Dibuat dengan ❤️ oleh Tim SIMPA
+</div>
