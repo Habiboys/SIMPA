@@ -57,23 +57,57 @@
 
 ## 🛠️ Tech Stack
 
-### Backend
-- **Framework:** NestJS
-- **Database:** MySQL
+<div align="center">
+
+### Backend Technologies
+[<img src="https://nestjs.com/img/logo-small.svg" width="35" height="35" alt="NestJS" />](https://nestjs.com/)&nbsp;&nbsp;
+[<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/mysql/mysql-original-wordmark.svg" width="35" height="35" alt="MySQL" />](https://www.mysql.com/)&nbsp;&nbsp;
+[<img src="https://raw.githubusercontent.com/typeorm/typeorm/master/resources/logo_big.png" height="35" alt="TypeORM" />](https://typeorm.io/)&nbsp;&nbsp;
+[<img src="https://jwt.io/img/pic_logo.svg" height="35" alt="JWT" />](https://jwt.io/)&nbsp;&nbsp;
+[<img src="https://raw.githubusercontent.com/swagger-api/swagger.io/wordpress/images/assets/SW-logo-clr.png" height="35" alt="Swagger" />](https://swagger.io/)&nbsp;&nbsp;
+[<img src="https://jestjs.io/img/jest.png" height="35" alt="Jest" />](https://jestjs.io/)
+
+### Frontend Technologies
+[<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/1280px-React-icon.svg.png" height="35" alt="React" />](https://reactjs.org/)&nbsp;&nbsp;
+[<img src="https://vitejs.dev/logo.svg" height="35" alt="Vite" />](https://vitejs.dev/)&nbsp;&nbsp;
+[<img src="https://raw.githubusercontent.com/reduxjs/redux/master/logo/logo.png" height="35" alt="Redux" />](https://redux.js.org/)&nbsp;&nbsp;
+[<img src="https://mui.com/static/logo.png" height="35" alt="Material-UI" />](https://mui.com/)&nbsp;&nbsp;
+[<img src="https://axios-http.com/assets/logo.svg" height="35" alt="Axios" />](https://axios-http.com/)&nbsp;&nbsp;
+[<img src="https://react-hook-form.com/images/logo/react-hook-form-logo-only.png" height="35" alt="React Hook Form" />](https://react-hook-form.com/)
+
+### Development & Deployment Tools
+[<img src="https://git-scm.com/images/logos/downloads/Git-Icon-1788C.png" height="35" alt="Git" />](https://git-scm.com/)&nbsp;&nbsp;
+[<img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" height="35" alt="GitHub" />](https://github.com/)&nbsp;&nbsp;
+[<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/docker/docker-original-wordmark.svg" height="35" alt="Docker" />](https://www.docker.com/)&nbsp;&nbsp;
+[<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/amazonwebservices/amazonwebservices-original-wordmark.svg" height="35" alt="AWS" />](https://aws.amazon.com/)&nbsp;&nbsp;
+[<img src="https://sentry-brand.storage.googleapis.com/sentry-logo-black.png" height="35" alt="Sentry" />](https://sentry.io/)
+
+### Additional Tools & Libraries
+[<img src="https://www.vectorlogo.zone/logos/tailwindcss/tailwindcss-icon.svg" height="35" alt="Tailwind CSS" />](https://tailwindcss.com/)&nbsp;&nbsp;
+[<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg" height="35" alt="TypeScript" />](https://www.typescriptlang.org/)&nbsp;&nbsp;
+[<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/nodejs/nodejs-original-wordmark.svg" height="35" alt="Node.js" />](https://nodejs.org/)
+
+</div>
+
+### Spesifikasi Teknis
+
+#### Backend
+- **Framework:** NestJS (Node.js)
+- **Database:** MySQL 8.0
 - **ORM:** TypeORM
 - **Authentication:** JWT + Bcrypt
-- **API Documentation:** Swagger/OpenAPI
+- **API Documentation:** Swagger/OpenAPI 3.0
 - **Testing:** Jest
 
-### Frontend
-- **Framework:** React (Vite)
+#### Frontend
+- **Framework:** React 18 dengan Vite
 - **State Management:** Redux Toolkit
-- **UI Components:** Material-UI
+- **UI Components:** Material-UI v5
 - **Forms:** React Hook Form + Yup
 - **HTTP Client:** Axios
 - **Charts:** Recharts
 
-### DevOps & Tools
+#### DevOps & Tools
 - **Version Control:** Git
 - **CI/CD:** GitHub Actions
 - **Containerization:** Docker
@@ -193,45 +227,6 @@ VITE_AWS_S3_URL=https://your-bucket.s3.region.amazonaws.com
 - Pencatatan hasil pemeliharaan
 - Upload dokumentasi foto
 - Akses ke laporan spesifik proyek
-
-## 🤝 Kontribusi
-
-Kami sangat menghargai kontribusi dari komunitas. Untuk berkontribusi:
-
-1. Fork repository
-2. Buat branch fitur (`git checkout -b feature/AmazingFeature`)
-3. Commit perubahan (`git commit -m 'Add some AmazingFeature'`)
-4. Push ke branch (`git push origin feature/AmazingFeature`)
-5. Buat Pull Request
-
-## 📝 Format Commit
-
-Format commit mengikuti [Conventional Commits](https://www.conventionalcommits.org/):
-
-```
-<type>[optional scope]: <description>
-
-[optional body]
-
-[optional footer(s)]
-```
-
-Contoh:
-- feat: menambahkan fitur upload foto
-- fix: memperbaiki bug di form login
-- docs: memperbarui dokumentasi API
-
-## 📄 Lisensi
-
-Proyek ini dilisensikan di bawah [MIT License](LICENSE).
-
-## 📞 Kontak
-
-- **Developer:** [Nama Anda]
-- **Email:** [Email Anda]
-- **Website:** [Website Anda]
-
----
 
 <div align="center">
 Dibuat dengan ❤️ oleh Tim SIMPA
