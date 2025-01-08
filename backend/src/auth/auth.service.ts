@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { LoginDto, RegisterDto } from './dto/auth.dto';
+import { Role } from '../enums/role.enum';
 
 @Injectable()
 export class AuthService {
@@ -35,7 +36,7 @@ export class AuthService {
     const user = this.userRepository.create({
         username: registerDto.username,
         password: hashedPassword,
-        role: registerDto.role,
+        role: registerDto.role || Role.LAPANGAN,
     });
 
     try {
@@ -142,5 +143,13 @@ export class AuthService {
       refreshToken: null,
     });
     return { message: 'Logged out successfully' };
+  }
+
+  async validateToken(user: any) {
+    return {
+      id: user.sub,
+      username: user.username,
+      role: user.role
+    };
   }
 }

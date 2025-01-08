@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsEnum, Matches } from 'class-validator';
+import { IsNotEmpty, IsString, IsEnum, Matches, IsOptional } from 'class-validator';
 import { Match } from '../decorators/match.decorator';
 import { Role } from '../../enums/role.enum';
 
@@ -29,7 +29,7 @@ export class RegisterDto {
     @Match('password', { message: 'Passwords do not match' })
     confirmPassword: string;
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsEnum(Role)
     role: Role;
 }
