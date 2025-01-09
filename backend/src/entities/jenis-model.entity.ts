@@ -4,6 +4,7 @@ import {
   Column,
   ManyToOne,
   OneToMany,
+  JoinColumn
 } from 'typeorm';
 import { Merek } from './merek.entity';
 import { DetailModel } from './detail-model.entity';
@@ -24,11 +25,10 @@ export class JenisModel {
   kapasitas: string;
 
   @ManyToOne(() => Merek, (merek) => merek.jenisModel)
+  @JoinColumn({ name: 'id_merek' }) 
   merek: Merek;
 
   @OneToMany(() => DetailModel, (detailModel) => detailModel.jenisModel)
   detailModel: DetailModel[];
 
-  @OneToMany(() => Unit, (unit) => unit.jenisModel)
-  unit: Unit[];
 }

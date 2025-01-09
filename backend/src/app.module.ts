@@ -15,8 +15,11 @@ import { JenisModel } from './entities/jenis-model.entity';
 import { HasilPembersihan } from './entities/hasil-pembersihan.entity';
 import { Merek } from './entities/merek.entity';
 import { DetailModel } from './entities/detail-model.entity';
-import { FotoPemeriksaan } from './entities/foto-pemeriksaan.entity';
+import { Foto } from './entities/foto.entity';
 import { Maintenance } from './entities/maintenance.entity';
+import { VariablePemeriksaan } from './entities/variable-pemeriksaan.entity';
+import { VariablePembersihan } from './entities/variable-pembersihan.entity';
+
 import { ProyekModule } from './proyek/proyek.module';
 import { MaintenanceModule } from './maintenance/maintenance.module';
 import { AcModule } from './ac/ac.module';
@@ -42,8 +45,10 @@ import { AcModule } from './ac/ac.module';
         HasilPembersihan,
         Merek,
         DetailModel,
-        FotoPemeriksaan,
+        Foto,
         Maintenance,
+        VariablePembersihan,
+        VariablePemeriksaan,
       ],
       synchronize: true, // set false di production
     }),

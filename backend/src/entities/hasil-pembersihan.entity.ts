@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { HasilPemeriksaan } from './hasil-pemeriksaan.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Maintenance } from './maintenance.entity';
+import { VariablePembersihan } from './variable-pembersihan.entity';
 
 @Entity('hasil_pembersihanan')
 export class HasilPembersihan {
@@ -7,23 +8,22 @@ export class HasilPembersihan {
   id: number;
 
   @Column({ nullable: true })
-  id_pemeriksaan: number;
+  id_maintenance: number;
 
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  jenis: string;
+  @Column({ nullable: true })
+  id_variable_pembersihan: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  @Column({ type: 'decimal', nullable: true })
   sebelum: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  @Column({ type: 'decimal', nullable: true })
   sesudah: number;
 
-  @Column({ type: 'date', nullable: true })
-  tanggal: Date;
+  @ManyToOne(() => Maintenance, maintenance => maintenance.hasilPembersihan)
+  @JoinColumn({ name: 'id_maintenance' }) 
+  maintenance: Maintenance;
 
-  @ManyToOne(
-    () => HasilPemeriksaan,
-    (hasilPemeriksaan) => hasilPemeriksaan.hasilPembersihan,
-  )
-  hasilPemeriksaan: HasilPemeriksaan;
+  @ManyToOne(() => VariablePembersihan, variablePembersihan => variablePembersihan.hasilPembersihan)
+  @JoinColumn({ name: 'id_variable_pembersihan' }) 
+  variablePembersihan: VariablePembersihan;
 }

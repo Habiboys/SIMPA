@@ -5,6 +5,7 @@ import {
   Column,
   ManyToOne,
   OneToMany,
+  JoinColumn
 } from 'typeorm';
 import { Gedung } from './gedung.entity';
 import { Unit } from './unit.entity';
@@ -24,6 +25,7 @@ export class Ruangan {
   lantai: number;
 
   @ManyToOne(() => Gedung, (gedung) => gedung.ruangan)
+  @JoinColumn({ name: 'id_gedung' }) 
   gedung: Gedung;
 
   @OneToMany(() => Unit, (unit) => unit.ruangan)

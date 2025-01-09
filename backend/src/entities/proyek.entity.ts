@@ -1,6 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn } from 'typeorm';
 import { Gedung } from './gedung.entity';
-import { Maintenance } from './maintenance.entity';
 
 @Entity('proyek')
 export class Proyek {
@@ -19,9 +18,6 @@ export class Proyek {
   @Column({ type: 'varchar', length: 255 })
   lokasi: string;
 
-  @OneToMany(() => Gedung, (gedung) => gedung.proyek)
+  @OneToMany(() => Gedung, gedung => gedung.proyek)
   gedung: Gedung[];
-
-  @OneToMany(() => Maintenance, (maintenance) => maintenance.proyek)
-  maintenance: Maintenance[];
 }

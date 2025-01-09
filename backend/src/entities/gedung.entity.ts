@@ -4,6 +4,7 @@ import {
   Column,
   ManyToOne,
   OneToMany,
+  JoinColumn
 } from 'typeorm';
 import { Proyek } from './proyek.entity';
 import { Ruangan } from './ruangan.entity';
@@ -19,7 +20,12 @@ export class Gedung {
   @Column({ type: 'varchar', length: 255, nullable: true })
   nama: string;
 
+  // @ManyToOne(() => Proyek, (proyek) => proyek.gedung)
+  // // @JoinColumn({ name: 'id_proyek' }) 
+  // proyek: Proyek;
+
   @ManyToOne(() => Proyek, (proyek) => proyek.gedung)
+  @JoinColumn({ name: 'id_proyek' }) 
   proyek: Proyek;
 
   @OneToMany(() => Ruangan, (ruangan) => ruangan.gedung)

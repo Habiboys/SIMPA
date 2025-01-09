@@ -1,7 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
 import { JenisModel } from './jenis-model.entity';
+import { Unit } from './unit.entity';
 
-import { Kategori } from '../enums/kategori.enum';
+export enum DetailModelKategori {
+  INDOOR = 'indoor',
+  OUTDOOR = 'outdoor'
+}
 
 @Entity('detail_model')
 export class DetailModel {
@@ -14,9 +18,13 @@ export class DetailModel {
   @Column({ type: 'varchar', length: 255, nullable: true })
   nama_model: string;
 
-  @Column({ type: 'enum', enum: Kategori, nullable: true })
-  kategori: Kategori;
+  @Column({ type: 'enum', enum: DetailModelKategori, nullable: true })
+  kategori: DetailModelKategori;
 
-  @ManyToOne(() => JenisModel, (jenisModel) => jenisModel.detailModel)
+  @ManyToOne(() => JenisModel, jenisModel => jenisModel.detailModel)
   jenisModel: JenisModel;
+
+  
+  @OneToMany(() => Unit, (unit) => unit.detailModel)
+  unit: Unit[];
 }
