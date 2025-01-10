@@ -75,13 +75,6 @@
 [<img src="https://axios-http.com/assets/logo.svg" height="35" alt="Axios" />](https://axios-http.com/)&nbsp;&nbsp;
 [<img src="https://react-hook-form.com/images/logo/react-hook-form-logo-only.png" height="35" alt="React Hook Form" />](https://react-hook-form.com/)
 
-### Development & Deployment Tools
-[<img src="https://git-scm.com/images/logos/downloads/Git-Icon-1788C.png" height="35" alt="Git" />](https://git-scm.com/)&nbsp;&nbsp;
-[<img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" height="35" alt="GitHub" />](https://github.com/)&nbsp;&nbsp;
-[<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/docker/docker-original-wordmark.svg" height="35" alt="Docker" />](https://www.docker.com/)&nbsp;&nbsp;
-[<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/amazonwebservices/amazonwebservices-original-wordmark.svg" height="35" alt="AWS" />](https://aws.amazon.com/)&nbsp;&nbsp;
-[<img src="https://sentry-brand.storage.googleapis.com/sentry-logo-black.png" height="35" alt="Sentry" />](https://sentry.io/)
-
 ### Additional Tools & Libraries
 [<img src="https://www.vectorlogo.zone/logos/tailwindcss/tailwindcss-icon.svg" height="35" alt="Tailwind CSS" />](https://tailwindcss.com/)&nbsp;&nbsp;
 [<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/typescript/typescript-original.svg" height="35" alt="TypeScript" />](https://www.typescriptlang.org/)&nbsp;&nbsp;
@@ -201,11 +194,6 @@ DB_NAME=simpa_db
 # JWT
 JWT_SECRET=your_jwt_secret
 JWT_EXPIRATION=24h
-
-# AWS S3
-AWS_ACCESS_KEY=your_access_key
-AWS_SECRET_KEY=your_secret_key
-AWS_BUCKET=your_bucket_name
 ```
 
 #### Frontend (.env)
@@ -229,5 +217,5 @@ VITE_AWS_S3_URL=https://your-bucket.s3.region.amazonaws.com
 - Akses ke laporan spesifik proyek
 
 <div align="center">
-Dibuat dengan ❤️ oleh Tim SIMPA
+Dibuat dengan 🩸 & 💦 oleh Nouval Habibie
 </div>
