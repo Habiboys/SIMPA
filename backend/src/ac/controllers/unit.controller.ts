@@ -16,13 +16,36 @@ export class UnitController {
     @InjectRepository(Ruangan)
     private ruanganRepo: Repository<Ruangan>,
   ) {}
-
-  @Get()
-  async findAll() {
+  @Get(':proyekId')
+  async findAll(@Param('proyekId') proyekId: number) {
     return await this.unitRepo.find({
+      where: { 
+        ruangan: { 
+          gedung: { 
+            proyek: { id: proyekId } 
+          } 
+        }
+      },
+      relations: ['detailModel', 'ruangan', 'ruangan.gedung', 'ruangan.gedung.proyek']
+    });
+  }
+
+  @Get('ruangan/:ruanganId')
+  async findByRuangan(@Param('ruanganId') ruanganId: number) {
+    return await this.unitRepo.find({
+      where: { 
+        ruangan: { id: ruanganId }
+      },
       relations: ['detailModel', 'ruangan']
     });
   }
+
+  // @Get()
+  // async findAll() {
+  //   return await this.unitRepo.find({
+  //     relations: ['detailModel', 'ruangan']
+  //   });
+  // }
 
   @Get(':id')
   async findOne(@Param('id') id: number) {

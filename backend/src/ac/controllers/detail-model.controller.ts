@@ -18,7 +18,14 @@ export class DetailModelController {
   @Get()
   async findAll() {
     return await this.detailModelRepo.find({
-      relations: ['jenisModel']
+      relations: ['jenisModel', 'jenisModel.merek'],
+      order: {
+        jenisModel: {
+          merek: { nama: 'ASC' },
+          nama_model: 'ASC'
+        },
+        nama_model: 'ASC'
+      }
     });
   }
 

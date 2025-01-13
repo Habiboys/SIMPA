@@ -4,6 +4,9 @@ import { MaintenanceController } from './maintenance.controller';
 import { Maintenance } from '../entities/maintenance.entity';
 import { HasilPemeriksaan } from '../entities/hasil-pemeriksaan.entity';
 import { HasilPembersihan } from '../entities/hasil-pembersihan.entity';
+import { VariablePembersihan } from '../entities/variable-pembersihan.entity';
+import { VariablePemeriksaan } from '../entities/variable-pemeriksaan.entity';
+import { VariablePembersihanController, VariablePemeriksaanController } from './variable.controller';
 import { Foto } from '../entities/foto.entity';
 import { Unit } from '../entities/unit.entity';
 
@@ -14,9 +17,15 @@ import { Unit } from '../entities/unit.entity';
       HasilPemeriksaan,
       HasilPembersihan,
       Foto,
-      Unit
+      Unit,
+      VariablePemeriksaan,
+      VariablePembersihan,
     ])
   ],
-  controllers: [MaintenanceController],
+  controllers: [
+    MaintenanceController,   
+    VariablePemeriksaanController,
+    VariablePembersihanController
+  ],
 })
 export class MaintenanceModule {}

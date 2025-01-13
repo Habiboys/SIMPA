@@ -1,133 +1,108 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import axiosInstance from '../utils/axiosConfig';
-// import axios from 'axios';
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { apiRequest } from "../utils/api";
 
 const Login = () => {
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    username: '',
-    password: ''
-  });
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    // Cek jika user sudah login
-    const token = localStorage.getItem('token');
-    if (token) {
-      // Validasi token
-      const validateToken = async () => {
-        try {
-          await axiosInstance.get('/auth/validate', {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          navigate('/dashboard');
-        } catch (err) {
-          // Jika token tidak valid, hapus dari localStorage
-          console.log(err);
-          localStorage.removeItem('token');
-          localStorage.removeItem('refreshToken');
-        }
-      };
-      validateToken();
-    }
-  }, [navigate]);
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setIsLoading(true);
 
     try {
-      const response = await axiosInstance.post('/auth/login', formData);
-      
-      // Perhatikan disini, backend mengirim accessToken bukan token
-      if (response.data?.accessToken) {
-        localStorage.setItem('token', response.data.accessToken); // simpan accessToken
-        if (response.data.refreshToken) {
-          localStorage.setItem('refreshToken', response.data.refreshToken);
-        }
+      const response = await apiRequest("/auth/login", "POST", { username, password });
 
-        // Setelah login sukses, validasi dan dapatkan role user
-        const validateResponse = await axiosInstance.get('/auth/validate');
-        if (validateResponse.data?.role === 'admin') {
-          navigate('/dashboard');
-        } else {
-          navigate('/pemeliharaan');
-        }
+      // Simpan tokens
+      localStorage.setItem("accessToken", response.accessToken);
+      localStorage.setItem("refreshToken", response.refreshToken);
+      
+      // Simpan data user
+      const userData = {
+        id: response.user.id,
+        username: response.user.username,
+        role: response.user.role,
+      };
+      localStorage.setItem("userData", JSON.stringify(userData));
+      localStorage.setItem("userRole", response.user.role);
+
+      // Navigasi berdasarkan role
+      switch (response.user.role) {
+        case "admin":
+          navigate("/dashboard");
+          break;
+        case "lapangan":
+          navigate("/lapangan");
+          break;
+        default:
+          navigate("/dashboard");
       }
-    } catch (err) {
-      console.error('Login error:', err);
-      setError(err.response?.data?.message || 'Username atau password salah');
+    } catch (error) {
+      setError(error.message || "Login gagal. Silakan coba lagi.");
     } finally {
       setIsLoading(false);
     }
-};
-
+  };
 
   return (
-    <div className="min-h-screen bg-base-200 flex items-center justify-center">
-      <div className="card w-96 bg-base-100 shadow-xl">
+    <div className="min-h-screen bg-base-200 flex items-center justify-center px-4">
+      <div className="card w-full max-w-md bg-base-100 shadow-xl">
         <div className="card-body">
-          <h2 className="card-title justify-center mb-4">Login</h2>
-          
+          <h2 className="card-title text-2xl font-bold justify-center mb-6">Login</h2>
+
           {error && (
-            <div className="alert alert-error mb-4">
+            <div className="alert alert-error mb-6">
               <span>{error}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleLogin} className="space-y-6">
             <div className="form-control">
               <label className="label">
-                <span className="label-text">Username</span>
+                <span className="label-text font-medium">Username</span>
               </label>
               <input
                 type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                className="input input-bordered"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="input input-bordered w-full"
+                placeholder="Masukkan username"
                 required
               />
             </div>
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text">Password</span>
+                <span className="label-text font-medium">Password</span>
               </label>
               <input
                 type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="input input-bordered"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="input input-bordered w-full"
+                placeholder="Masukkan password"
                 required
               />
             </div>
 
             <div className="form-control mt-6">
-              <button 
-                type="submit" 
-                className={`btn btn-primary ${isLoading ? 'loading' : ''}`}
+              <button
+                type="submit"
+                className={`btn btn-primary w-full ${isLoading ? "loading" : ""}`}
                 disabled={isLoading}
               >
-                {isLoading ? 'Loading...' : 'Login'}
+                {isLoading ? "Loading..." : "Login"}
               </button>
             </div>
           </form>
 
-          <div className="text-center mt-4">
-            Belum punya akun?{' '}
-            <Link to="/register" className="link link-primary">
+          <div className="text-center mt-6 text-sm">
+            <span className="text-base-content/70">Belum punya akun? </span>
+            <Link to="/register" className="link link-primary font-medium">
               Register
             </Link>
           </div>

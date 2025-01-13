@@ -10,6 +10,7 @@ import { MerekController } from './controllers/merek.controller';
 import { JenisModelController } from './controllers/jenis-model.controller';
 import { DetailModelController } from './controllers/detail-model.controller';
 import { UnitController } from './controllers/unit.controller';
+import { ProyekModule } from '../proyek/proyek.module'; 
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { UnitController } from './controllers/unit.controller';
       DetailModel,
       Unit,
       Ruangan
-    ])
+    ]),
+    ProyekModule 
   ],
   controllers: [
     MerekController,
