@@ -30,14 +30,14 @@ export class ProyekService {
 
   async findAllProyek() {
     return await this.proyekRepository.find({
-      relations: ['gedung', 'maintenance'],
+      relations: ['gedung'],
     });
   }
 
   async findOneProyek(id: number) {
     const proyek = await this.proyekRepository.findOne({
       where: { id },
-      relations: ['gedung', 'maintenance'],
+      relations: ['gedung'],
     });
 
     if (!proyek) {
@@ -127,7 +127,7 @@ export class ProyekService {
   async findAllRuangan(gedungId: number) {
     return await this.ruanganRepository.find({
       where: { gedung: { id: gedungId } },
-      relations: ['unit'],
+      relations: ['unit', 'unit.detailModel'], // Tambahkan relasi ke unit dan detailModel
     });
   }
 

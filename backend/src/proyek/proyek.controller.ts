@@ -198,18 +198,12 @@ export class ProyekController {
   @ApiOperation({ summary: 'Mendapatkan semua ruangan dalam gedung' })
   @ApiParam({ name: 'proyekId', description: 'ID Proyek' })
   @ApiParam({ name: 'gedungId', description: 'ID Gedung' })
-  @ApiResponse({
-    status: 200,
-    description: 'Daftar semua ruangan',
-    type: [CreateRuanganDto],
-  })
-  @ApiResponse({ status: 404, description: 'Gedung tidak ditemukan' })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
-  findAllRuangan(
+  async findAllRuangan(
     @Param('proyekId') proyekId: string,
     @Param('gedungId') gedungId: string,
   ) {
-    return this.proyekService.findAllRuangan(+gedungId);
+    const ruangan = await this.proyekService.findAllRuangan(+gedungId);
+    return ruangan;
   }
 
   @Get(':proyekId/gedung/:gedungId/ruangan/:id')

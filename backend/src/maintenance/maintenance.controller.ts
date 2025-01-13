@@ -1,10 +1,11 @@
 // maintenance.controller.ts
-import { Controller, Post, Body, NotFoundException } from '@nestjs/common';
+import { Controller, Post, Body, NotFoundException, Get, Param } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Maintenance } from '../entities/maintenance.entity';
 import { HasilPemeriksaan } from '../entities/hasil-pemeriksaan.entity';
 import { HasilPembersihan } from '../entities/hasil-pembersihan.entity';
+
 import { Foto } from '../entities/foto.entity';
 import { Unit } from '../entities/unit.entity';
 import { CreateMaintenanceDto } from './dto/maintenance.dto';
@@ -117,3 +118,4 @@ export class MaintenanceController {
     }
   }
 }
+

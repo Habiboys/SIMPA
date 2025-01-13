@@ -18,7 +18,11 @@ export class JenisModelController {
   @Get()
   async findAll() {
     return await this.jenisModelRepo.find({
-      relations: ['merek']
+      relations: ['merek', 'detailModel'],
+      order: {
+        merek: { nama: 'ASC' },
+        nama_model: 'ASC'
+      }
     });
   }
 
@@ -26,7 +30,7 @@ export class JenisModelController {
   async findOne(@Param('id') id: number) {
     const jenisModel = await this.jenisModelRepo.findOne({
       where: { id },
-      relations: ['merek']
+      relations: ['merek', 'detailModel']
     });
     if (!jenisModel) throw new NotFoundException('JenisModel not found');
     return jenisModel;

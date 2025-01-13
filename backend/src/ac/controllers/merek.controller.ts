@@ -13,7 +13,15 @@ export class MerekController {
 
   @Get()
   async findAll() {
-    return await this.merekRepo.find();
+    return await this.merekRepo.find({
+      relations: ['jenisModel', 'jenisModel.detailModel'],
+      order: {
+        nama: 'ASC',
+        jenisModel: {
+          nama_model: 'ASC'
+        }
+      }
+    });
   }
 
   @Get(':id')
