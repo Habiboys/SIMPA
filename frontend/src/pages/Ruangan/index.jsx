@@ -566,7 +566,7 @@ const Ruangan = () => {
                 onChange={(e) => setRoomForm({ ...roomForm, lantai: e.target.value })}
                 placeholder="Masukkan nomor lantai"
                 required
-                min="1"
+                min="0"
               />
             </div>
             <div className="modal-action">

@@ -8,14 +8,14 @@ export class CreateUnitDto {
   @IsNumber()
   id_ruangan: number;
 
-  @IsString()
-  nama: string;
+  // @IsString()
+  // nama: string;
 
   @IsString()
   nomor_seri: string;
 
-  @IsEnum(UnitKategori)
-  kategori: UnitKategori;
+  // @IsEnum(UnitKategori)
+  // kategori: UnitKategori;
 }
 
 export class UpdateUnitDto extends CreateUnitDto {}

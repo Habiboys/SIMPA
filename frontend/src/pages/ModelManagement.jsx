@@ -17,7 +17,7 @@ const ModelManagementPage = () => {
   const [modelForm, setModelForm] = useState({
     id_merek: '',
     nama_model: '',
-    kapasitas: ''
+    // kapasitas: ''
   });
   const [detailModelForm, setDetailModelForm] = useState({
     id_model: '',
@@ -144,7 +144,7 @@ const ModelManagementPage = () => {
     
     // Reset semua form terlebih dahulu
     setMerekForm({ nama: '' });
-    setModelForm({ id_merek: '', nama_model: '', kapasitas: '' });
+    setModelForm({ id_merek: '', nama_model: '' });
     setDetailModelForm({ id_model: '', nama_model: '', kategori: '' });
     
     if (item) {
@@ -157,7 +157,7 @@ const ModelManagementPage = () => {
           setModelForm({
             id_merek: item.id_merek || parentId,
             nama_model: item.nama_model,
-            kapasitas: item.kapasitas
+            // kapasitas: item.kapasitas
           });
           break;
         case 'detail':
@@ -186,7 +186,7 @@ const ModelManagementPage = () => {
     setSelectedItem(null);
     setModalType(null);
     setMerekForm({ nama: '' });
-    setModelForm({ id_merek: '', nama_model: '', kapasitas: '' });
+    setModelForm({ id_merek: '', nama_model: '' });
     setDetailModelForm({ id_model: '', nama_model: '', kategori: '' });
   };
 
@@ -211,9 +211,6 @@ const ModelManagementPage = () => {
         <div className="flex items-center justify-between">
           <div>
             <h4 className="text-lg font-medium">{model.nama_model}</h4>
-            <div className="badge badge-neutral mt-1">
-              {model.kapasitas}
-            </div>
           </div>
           <div className="flex gap-2">
             <button 
@@ -473,19 +470,6 @@ const ModelManagementPage = () => {
                     />
                   </div>
 
-                  <div className="form-control">
-                    <label className="label">
-                      <span className="label-text">Kapasitas</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="input input-bordered w-full"
-                      value={modelForm.kapasitas}
-                      onChange={(e) => setModelForm({ ...modelForm, kapasitas: e.target.value })}
-                      placeholder="Contoh: 1 PK"
-                      required
-                    />
-                  </div>
                 </>
               )}
 
@@ -510,7 +494,7 @@ const ModelManagementPage = () => {
                         {mereks.flatMap(merek => 
                           merek.jenisModel?.map(model => (
                             <option key={model.id} value={model.id}>
-                              {merek.nama} - {model.nama_model} ({model.kapasitas})
+                              {merek.nama} - {model.nama_model}
                             </option>
                           )) || []
                         )}

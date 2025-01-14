@@ -109,9 +109,9 @@ const Navbar = ({ toggleSidebar }) => {
                 <p className="font-semibold">{user?.username || 'User'}</p>
                 <div className="badge badge-neutral mt-2 capitalize">{user?.role || 'Guest'}</div>
               </div>
-              {user?.role === 'admin' && (
+          
                 <li><a className="gap-4"><Home size={18} /> Dashboard</a></li>
-              )}
+              
               <li><a className="gap-4"><User size={18} /> My Profile</a></li>
               <li><a className="gap-4"><Calendar size={18} /> My Schedule</a></li>
               <li><a className="gap-4"><FileText size={18} /> My Documents</a></li>
@@ -151,7 +151,7 @@ const Navbar = ({ toggleSidebar }) => {
       )}
 
       {/* Mobile Bottom Navigation */}
-      <div className="btm-nav lg:hidden">
+      {/* <div className="btm-nav lg:hidden">
         {user?.role === 'admin' && (
           <button className="active">
             <Home size={20} />
@@ -170,7 +170,7 @@ const Navbar = ({ toggleSidebar }) => {
           <Settings size={20} />
           <span className="btm-nav-label">Settings</span>
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };

@@ -7,8 +7,8 @@ export class CreateJenisModelDto {
   @IsString()
   nama_model: string;
 
-  @IsString()
-  kapasitas: string;
+  // @IsString()
+  // kapasitas: string;
 }
 
 export class UpdateJenisModelDto extends CreateJenisModelDto {}

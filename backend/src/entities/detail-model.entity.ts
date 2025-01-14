@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { JenisModel } from './jenis-model.entity';
 import { Unit } from './unit.entity';
 
@@ -22,9 +22,9 @@ export class DetailModel {
   kategori: DetailModelKategori;
 
   @ManyToOne(() => JenisModel, jenisModel => jenisModel.detailModel)
+  @JoinColumn({ name: 'id_model' })  // Tambahkan ini
   jenisModel: JenisModel;
 
-  
   @OneToMany(() => Unit, (unit) => unit.detailModel)
   unit: Unit[];
 }

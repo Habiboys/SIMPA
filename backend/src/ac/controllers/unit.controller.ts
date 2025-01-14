@@ -26,7 +26,7 @@ export class UnitController {
           } 
         }
       },
-      relations: ['detailModel', 'ruangan', 'ruangan.gedung', 'ruangan.gedung.proyek']
+      relations: ['detailModel', 'ruangan', 'ruangan.gedung', 'ruangan.gedung.proyek', 'detailModel.jenisModel', 'detailModel.jenisModel.merek']
     });
   }
 

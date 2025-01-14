@@ -23,8 +23,6 @@ const menuItems = [
     title: 'Main Menu',
     items: [
       { icon: Home, label: 'Dashboard', path: '/dashboard' },
-      { icon: Briefcase, label: 'Proyek', path: '/proyek' },
-      { icon: FileText, label: 'Documents', path: '/documents' },
     ]
   },
   {
@@ -38,9 +36,8 @@ const menuItems = [
   {
     title: 'Maintenance',
     items: [
-      { icon: ClipboardCheck, label: 'Laporkan Pemeriksaan', path: '/laporan' },
-      { icon: BarChart2, label: 'Hasil Pemeriksaan', path: '/hasil' },
-      { icon: Wrench, label: 'Jenis Maintenance', path: '/maintenance' },
+      { icon: BarChart2, label: 'Hasil Pemeriksaan', path: '/hasil-maintenance' },
+      { icon: Wrench, label: 'Jenis Maintenance', path: '/jenis-maintenance' },
     ]
   }
 ];

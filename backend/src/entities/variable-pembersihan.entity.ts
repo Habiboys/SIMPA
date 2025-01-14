@@ -12,7 +12,7 @@ export class VariablePembersihan {
   id: number;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
-  nama_variabel: string;
+  nama_variable: string;
 
   @Column({ type: 'enum', enum: VariablePembersihanJenis, nullable: true })
   jenis: VariablePembersihanJenis;

@@ -5,10 +5,10 @@ import { apiRequest } from '../utils/api';
 import Swal from 'sweetalert2';
 
 const ITEMS_PER_PAGE = 10;
-const KATEGORI_OPTIONS = [
-  { value: 'indoor', label: 'INDOOR' },
-  { value: 'outdoor', label: 'OUTDOOR' }
-];
+// const KATEGORI_OPTIONS = [
+//   { value: 'indoor', label: 'INDOOR' },
+//   { value: 'outdoor', label: 'OUTDOOR' }
+// ];
 
 const UnitManagementPage = () => {
   const { selectedProject } = useProject();
@@ -36,9 +36,9 @@ const UnitManagementPage = () => {
   const [unitForm, setUnitForm] = useState({
     id_jenis_model: '',
     id_ruangan: '',
-    nama: '',
+    // nama: '',
     nomor_seri: '',
-    kategori: ''
+    // kategori: ''
   });
 
   const [selectedItem, setSelectedItem] = useState(null);
@@ -62,9 +62,9 @@ const UnitManagementPage = () => {
   // Form validation
   const validateForm = () => {
     const errors = {};
-    if (!unitForm.nama.trim()) errors.nama = 'Nama unit harus diisi';
+    // if (!unitForm.nama.trim()) errors.nama = 'Nama unit harus diisi';
     if (!unitForm.nomor_seri.trim()) errors.nomor_seri = 'Nomor seri harus diisi';
-    if (!unitForm.kategori) errors.kategori = 'Kategori harus dipilih';
+    // if (!unitForm.kategori) errors.kategori = 'Kategori harus dipilih';
     if (!unitForm.id_jenis_model) errors.id_jenis_model = 'Model harus dipilih';
     if (!unitForm.id_ruangan) errors.id_ruangan = 'Ruangan harus dipilih';
     setFormErrors(errors);
@@ -231,18 +231,18 @@ const UnitManagementPage = () => {
       setUnitForm({
         id_jenis_model: item.detailModel?.id?.toString() || '',
         id_ruangan: item.ruangan?.id?.toString() || '',
-        nama: item.nama || '',
+        // nama: item.nama || '',
         nomor_seri: item.nomor_seri || '',
-        kategori: item.kategori || ''
+        // kategori: item.kategori || ''
       });
     } else {
       setSelectedGedung('');
       setUnitForm({
         id_jenis_model: '',
         id_ruangan: '',
-        nama: '',
+        // nama: '',
         nomor_seri: '',
-        kategori: ''
+        // kategori: ''
       });
     }
 
@@ -258,9 +258,9 @@ const UnitManagementPage = () => {
     setUnitForm({
       id_jenis_model: '',
       id_ruangan: '',
-      nama: '',
+      // nama: '',
       nomor_seri: '',
-      kategori: ''
+      // kategori: ''
     });
   };
 
@@ -268,7 +268,7 @@ const UnitManagementPage = () => {
   const filteredUnits = units.filter(unit => {
     const searchLower = searchTerm.toLowerCase();
     const matchesSearch = 
-      unit.nama?.toLowerCase().includes(searchLower) ||
+      // unit.nama?.toLowerCase().includes(searchLower) ||
       unit.nomor_seri?.toLowerCase().includes(searchLower) ||
       unit.ruangan?.nama?.toLowerCase().includes(searchLower) ||
       unit.detailModel?.nama_model?.toLowerCase().includes(searchLower);
@@ -401,10 +401,9 @@ const UnitManagementPage = () => {
           <table className="table table-zebra">
             <thead>
               <tr>
-                <th>Nama Unit</th>
+                <th>No. Seri Unit</th>
                 <th>Model</th>
                 <th>Lokasi</th>
-                <th>No. Seri</th>
                 <th>Kategori</th>
                 <th className="text-right">Aksi</th>
               </tr>
@@ -412,7 +411,8 @@ const UnitManagementPage = () => {
             <tbody>
               {paginatedUnits.map((unit) => (
                 <tr key={unit.id}>
-                  <td className="font-medium">{unit.nama}</td>
+                  {/* <td className="font-medium">{unit.nama}</td> */}
+                  <td className="font-medium">{unit.nomor_seri}</td>
                   <td>
                     {unit.detailModel?.jenisModel?.merek?.nama} -{' '}
                     {unit.detailModel?.nama_model}
@@ -425,10 +425,10 @@ const UnitManagementPage = () => {
                       </span>
                     </div>
                   </td>
-                  <td>{unit.nomor_seri}</td>
+                  
                   <td>
                     <span className="badge badge-outline">
-                      {unit.kategori?.toUpperCase()}
+                      {unit.detailModel.kategori?.toUpperCase()}
                     </span>
                   </td>
                   <td className="text-right">
@@ -510,27 +510,30 @@ const UnitManagementPage = () => {
           </h3>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="form-control">
+          <div className="form-control">
               <label className="label">
-                <span className="label-text">Nama Unit</span>
+                <span className="label-text">Nomor Seri</span>
               </label>
               <input
                 type="text"
                 className={`input input-bordered w-full ${
-                  formErrors.nama ? 'input-error' : ''
+                  formErrors.nomor_seri ? 'input-error' : ''
                 }`}
-                value={unitForm.nama}
+                value={unitForm.nomor_seri}
                 onChange={(e) =>
-                  setUnitForm({ ...unitForm, nama: e.target.value })
+                  setUnitForm({ ...unitForm, nomor_seri: e.target.value })
                 }
-                placeholder="Masukkan nama unit"
+                placeholder="Masukkan nomor seri"
               />
-              {formErrors.nama && (
+              {formErrors.nomor_seri && (
                 <label className="label">
-                  <span className="label-text-alt text-error">{formErrors.nama}</span>
+                  <span className="label-text-alt text-error">
+                    {formErrors.nomor_seri}
+                  </span>
                 </label>
               )}
             </div>
+            
 
             <div className="form-control">
               <label className="label">
@@ -614,31 +617,9 @@ const UnitManagementPage = () => {
               )}
             </div>
 
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Nomor Seri</span>
-              </label>
-              <input
-                type="text"
-                className={`input input-bordered w-full ${
-                  formErrors.nomor_seri ? 'input-error' : ''
-                }`}
-                value={unitForm.nomor_seri}
-                onChange={(e) =>
-                  setUnitForm({ ...unitForm, nomor_seri: e.target.value })
-                }
-                placeholder="Masukkan nomor seri"
-              />
-              {formErrors.nomor_seri && (
-                <label className="label">
-                  <span className="label-text-alt text-error">
-                    {formErrors.nomor_seri}
-                  </span>
-                </label>
-              )}
-            </div>
+          
 
-            <div className="form-control">
+            {/* <div className="form-control">
               <label className="label">
                 <span className="label-text">Kategori</span>
               </label>
@@ -665,7 +646,7 @@ const UnitManagementPage = () => {
                   </span>
                 </label>
               )}
-            </div>
+            </div> */}
 
             <div className="modal-action">
               <button
