@@ -34,11 +34,12 @@ export class UnitController {
   async findByRuangan(@Param('ruanganId') ruanganId: number) {
     return await this.unitRepo.find({
       where: { 
-        ruangan: { id: ruanganId }
+        ruangan: { id: ruanganId },
       },
-      relations: ['detailModel', 'ruangan']
+      relations: ['detailModel', 'ruangan',  'detailModel', 'detailModel.jenisModel', 'detailModel.jenisModel.merek' ]
     });
   }
+  
 
   // @Get()
   // async findAll() {

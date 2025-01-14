@@ -271,11 +271,10 @@ export class MaintenanceController {
       'Tanggal',
       'Gedung',
       'Ruangan',
-      'Unit',
       'Merek',
       'Model',
       'Detail Model',
-      'Nomor Seri',
+      'Seri Unit',
       'Nama Pemeriksaan',
       'Kategori'
     ];
@@ -297,7 +296,6 @@ export class MaintenanceController {
         new Date(maintenance.tanggal).toLocaleDateString('id-ID'),
         maintenance.unit?.ruangan?.gedung?.nama || 'N/A',
         maintenance.unit?.ruangan?.nama || 'N/A',
-        maintenance.unit?.nama || 'N/A',
         merekNama,
         modelNama,
         detailModelNama,
