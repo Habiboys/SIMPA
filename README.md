@@ -217,5 +217,5 @@ VITE_AWS_S3_URL=https://your-bucket.s3.region.amazonaws.com
 - Akses ke laporan spesifik proyek
 
 <div align="center">
-Dibuat dengan 🩸 & 💦 oleh Nouval Habibie
+Dibuat dengan ❤️ oleh Nouval Habibie
 </div>
