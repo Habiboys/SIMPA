@@ -9,7 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { LoginDto, RegisterDto } from './dto/auth.dto';
 import { Role } from '../enums/role.enum';
 
@@ -95,7 +95,7 @@ export class AuthService {
       accessToken,
       refreshToken,
       // role: user.role,
-      user: user
+      user: user,
     };
   }
 

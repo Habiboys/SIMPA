@@ -1,5 +1,12 @@
 // maintenance.dto.ts
-import { IsDate, IsEnum, IsNumber, IsString, IsArray, ValidateNested } from 'class-validator';
+import {
+  IsDate,
+  IsEnum,
+  IsNumber,
+  IsString,
+  IsArray,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { MaintenanceKategori } from '../../entities/maintenance.entity';
 import { FotoStatus } from '../../entities/foto.entity';
@@ -41,6 +48,12 @@ export class CreateMaintenanceDto {
 
   @IsString()
   nama_pemeriksaan: string;
+
+  @IsString()
+  palet_indoor: string;
+
+  @IsString()
+  palet_outdoor: string;
 
   @IsEnum(MaintenanceKategori)
   kategori: MaintenanceKategori;

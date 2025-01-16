@@ -24,6 +24,5 @@ export class CreateRuanganDto {
     required: false,
   })
   @IsOptional()
-  @IsNumber()
-  lantai: number;
+  lantai: string;
 }

@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
 import { Unit } from './unit.entity';
 import { HasilPembersihan } from './hasil-pembersihan.entity';
 import { HasilPemeriksaan } from './hasil-pemeriksaan.entity';
@@ -6,7 +13,7 @@ import { Foto } from './foto.entity';
 
 export enum MaintenanceKategori {
   INDOOR = 'indoor',
-  OUTDOOR = 'outdoor'
+  OUTDOOR = 'outdoor',
 }
 
 @Entity('maintenance')
@@ -23,19 +30,31 @@ export class Maintenance {
   @Column({ type: 'varchar', length: 255, nullable: true })
   nama_pemeriksaan: string;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  palet_indoor: string;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  palet_outdoor: string;
+
   @Column({ type: 'enum', enum: MaintenanceKategori, nullable: true })
   kategori: MaintenanceKategori;
 
-  @ManyToOne(() => Unit, unit => unit.maintenance)
-  @JoinColumn({ name: 'id_unit' }) 
+  @ManyToOne(() => Unit, (unit) => unit.maintenance)
+  @JoinColumn({ name: 'id_unit' })
   unit: Unit;
 
-  @OneToMany(() => HasilPembersihan, hasilPembersihan => hasilPembersihan.maintenance)
+  @OneToMany(
+    () => HasilPembersihan,
+    (hasilPembersihan) => hasilPembersihan.maintenance,
+  )
   hasilPembersihan: HasilPembersihan[];
 
-  @OneToMany(() => HasilPemeriksaan, hasilPemeriksaan => hasilPemeriksaan.maintenance)
+  @OneToMany(
+    () => HasilPemeriksaan,
+    (hasilPemeriksaan) => hasilPemeriksaan.maintenance,
+  )
   hasilPemeriksaan: HasilPemeriksaan[];
 
-  @OneToMany(() => Foto, foto => foto.maintenance)
+  @OneToMany(() => Foto, (foto) => foto.maintenance)
   foto: Foto[];
 }
