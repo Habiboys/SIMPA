@@ -43,7 +43,7 @@ export class ProyekController {
   createProyek(@Body() createProyekDto: CreateProyekDto) {
     return this.proyekService.createProyek(createProyekDto);
   }
-
+  // sadad
   @Get()
   @ApiOperation({ summary: 'Mendapatkan semua proyek' })
   @ApiResponse({
