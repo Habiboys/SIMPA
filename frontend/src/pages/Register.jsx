@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axiosInstance from '../utils/axiosConfig';
+import { apiRequest } from '../utils/api';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -39,11 +40,13 @@ const Register = () => {
     }
 
     try {
-      const response = await axiosInstance.post('/auth/register', {
+      const response = await apiRequest("/auth/login", "POST", {
         username: formData.username,
         password: formData.password,
-        confirmPassword: formData.confirmPassword  // Tambahkan ini
+        confirmPassword: formData.confirmPassword 
       });
+
+     
 
       if (response.data) {
         navigate('/login');

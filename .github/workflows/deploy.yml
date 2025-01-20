@@ -1,0 +1,96 @@
+name: CI/CD to Cloud Run
+
+on:
+  push:
+    branches:
+      - main  # Ubah jika menggunakan branch lain
+  pull_request:
+    branches:
+      - main  # Ubah jika menggunakan branch lain
+
+jobs:
+  # Backend build and deploy
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '22'
+
+      - name: Cache node modules for backend
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/be/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies for backend
+        run: cd be && npm install
+
+      - name: Build backend
+        run: cd be && npm run build
+
+      - name: Deploy backend to Cloud Run
+        run: |
+          gcloud auth activate-service-account --key-file=${{ secrets.GCP_SA_KEY }}
+          gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+          gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/backend
+          gcloud run deploy backend \
+            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/backend \
+            --platform managed \
+            --region us-central1 \
+            --allow-unauthenticated \
+            --set-env-vars \
+              JWT_SECRET=${{ secrets.JWT_SECRET }},\
+              JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }},\
+              DB_HOST=${{ secrets.DB_HOST }},\
+              DB_PORT=${{ secrets.DB_PORT }},\
+              DB_USERNAME=${{ secrets.DB_USERNAME }},\
+              DB_PASSWORD=${{ secrets.DB_PASSWORD }},\
+              DB_NAME=${{ secrets.DB_NAME }}
+      
+
+  # Frontend build and deploy
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '22'
+
+      - name: Cache node modules for frontend
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/fe/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies for frontend
+        run: cd fe && npm install
+
+      - name: Build frontend
+        run: cd fe && npm run build
+
+      - name: Deploy frontend to Cloud Run
+        run: |
+          gcloud auth activate-service-account --key-file=${{ secrets.GCP_SA_KEY }}
+          gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+          gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/frontend
+          gcloud run deploy frontend \
+            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/frontend \
+            --platform managed \
+            --region us-central1 \
+            --allow-unauthenticated \
+            --set-env-vars \
+              API_URL=${{ secrets.API_URL }}
+      

@@ -50,7 +50,7 @@ import { AcModule } from './ac/ac.module';
         VariablePembersihan,
         VariablePemeriksaan,
       ],
-      synchronize: true, // set false di production
+      synchronize: false, // set false di production
     }),
     AuthModule,
     ProyekModule,
