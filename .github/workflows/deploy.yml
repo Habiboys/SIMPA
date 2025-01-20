@@ -25,7 +25,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/be/package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/backend/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
@@ -33,7 +33,7 @@ jobs:
         run: cd backend && npm install
 
       - name: Build backend
-        run: cd be && npm run build
+        run: cd backend && npm run build
 
       - name: Deploy backend to Cloud Run
         run: |
@@ -71,7 +71,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/fe/package-lock.json') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/frontend/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
@@ -79,7 +79,7 @@ jobs:
         run: cd frontend && npm install
 
       - name: Build frontend
-        run: cd fe && npm run build
+        run: cd frontend && npm run build
 
       - name: Deploy frontend to Cloud Run
         run: |
