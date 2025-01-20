@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import axiosInstance from '../utils/axiosConfig';
 import { apiRequest } from '../utils/api';
 
 const Register = () => {
