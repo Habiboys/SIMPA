@@ -12,40 +12,36 @@ jobs:
   deploy-backend:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+      - name: Google Auth
+        uses: google-github-actions/auth@v1
         with:
-          node-version: '22'
+          credentials_json: "${{ secrets.GCLOUD_SERVICE_KEY }}"
 
-      - name: Cache node modules for backend
-        uses: actions/cache@v2
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/backend/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          project_id: "${{ secrets.GCLOUD_PROJECT_ID }}"
+          
 
-      - name: Install dependencies for backend
-        run: cd backend && npm install
+      - name: Authenticate Docker with GCP
+        run: gcloud auth configure-docker
 
-      - name: Build backend
-        run: cd backend && npm run build
-
-      - name: Create GCP service account key file
-        run: echo "${{ secrets.GCP_SA_KEY }}" | base64 -d > gcp-key.json
-
-      - name: Deploy backend to Cloud Run
+      - name: Build and Push Docker Image
         run: |
-          gcloud auth activate-service-account --key-file=gcp-key.json
-          gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
-          gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/backend ./backend
+          IMAGE_NAME="gcr.io/${{ secrets.GCLOUD_PROJECT_ID }}/backend"
+          cd backend
+          docker build -t $IMAGE_NAME .
+          docker push $IMAGE_NAME
+
+      - name: Deploy to Cloud Run
+        run: |
           gcloud run deploy backend \
-            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/backend \
-            --platform managed \
-            --region us-central1 \
+            --image=gcr.io/${{ secrets.GCLOUD_PROJECT_ID }}/backend \
+            --region=${{ secrets.GCLOUD_REGION }} \
+            --platform=managed \
             --allow-unauthenticated \
             --set-env-vars \
               JWT_SECRET=${{ secrets.JWT_SECRET }},\
@@ -59,40 +55,36 @@ jobs:
   deploy-frontend:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
+      - name: Google Auth
+        uses: google-github-actions/auth@v1
         with:
-          node-version: '22'
+          credentials_json: "${{ secrets.GCLOUD_SERVICE_KEY }}"
 
-      - name: Cache node modules for frontend
-        uses: actions/cache@v2
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/frontend/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          project_id: "${{ secrets.GCLOUD_PROJECT_ID }}"
+         
 
-      - name: Install dependencies for frontend
-        run: cd frontend && npm install
+      - name: Authenticate Docker with GCP
+        run: gcloud auth configure-docker
 
-      - name: Build frontend
-        run: cd frontend && npm run build
-
-      - name: Create GCP service account key file
-        run: echo "${{ secrets.GCP_SA_KEY }}" | base64 -d > gcp-key.json
-
-      - name: Deploy frontend to Cloud Run
+      - name: Build and Push Docker Image
         run: |
-          gcloud auth activate-service-account --key-file=gcp-key.json
-          gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
-          gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/frontend ./frontend
+          IMAGE_NAME="gcr.io/${{ secrets.GCLOUD_PROJECT_ID }}/frontend"
+          cd frontend
+          docker build -t $IMAGE_NAME .
+          docker push $IMAGE_NAME
+
+      - name: Deploy to Cloud Run
+        run: |
           gcloud run deploy frontend \
-            --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/frontend \
-            --platform managed \
-            --region us-central1 \
+            --image=gcr.io/${{ secrets.GCLOUD_PROJECT_ID }}/frontend \
+            --region=${{ secrets.GCLOUD_REGION }} \
+            --platform=managed \
             --allow-unauthenticated \
             --set-env-vars \
               API_URL=${{ secrets.API_URL }}
