@@ -11,7 +11,7 @@ COPY package*.json ./
 RUN npm install
 
 # Salin sisa kode aplikasi ke dalam kontainer
-COPY frontend .
+COPY . .
 
 # Bangun aplikasi React untuk produksi
 RUN npm run build
