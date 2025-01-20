@@ -2,7 +2,7 @@
 FROM node:22
 
 # Set direktori kerja di dalam container
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # Copy package.json dan package-lock.json dari folder backend
 COPY package*.json ./
@@ -11,7 +11,7 @@ COPY package*.json ./
 RUN npm install
 
 # Copy seluruh aplikasi backend
-COPY backend/ .
+COPY . .
 
 # Expose port
 EXPOSE 3000
