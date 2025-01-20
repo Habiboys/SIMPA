@@ -51,6 +51,7 @@ jobs:
             --region=${{ secrets.GCP_REGION }} \
             --platform=managed \
             --allow-unauthenticated \
+            --port=3000 \
             --set-env-vars JWT_SECRET=${{ secrets.JWT_SECRET }},JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }},DB_HOST=${{ secrets.DB_HOST }},DB_PORT=${{ secrets.DB_PORT }},DB_USERNAME=${{ secrets.DB_USERNAME }},DB_PASSWORD=${{ secrets.DB_PASSWORD }},DB_NAME=${{ secrets.DB_NAME }}
 
       # Deploy Frontend
@@ -69,4 +70,5 @@ jobs:
             --platform=managed \
             --allow-unauthenticated \
             --set-env-vars \
+            --port=80 \
               API_URL=${{ secrets.API_URL }}
