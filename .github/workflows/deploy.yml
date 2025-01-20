@@ -30,7 +30,7 @@ jobs:
             ${{ runner.os }}-node-
 
       - name: Install dependencies for backend
-        run: cd be && npm install
+        run: cd backend && npm install
 
       - name: Build backend
         run: cd be && npm run build
@@ -76,7 +76,7 @@ jobs:
             ${{ runner.os }}-node-
 
       - name: Install dependencies for frontend
-        run: cd fe && npm install
+        run: cd frontend && npm install
 
       - name: Build frontend
         run: cd fe && npm run build
