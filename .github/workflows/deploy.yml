@@ -40,6 +40,16 @@ jobs:
           docker build -t $IMAGE_NAME .
           docker push $IMAGE_NAME
 
+           
+      - name: Create Artifact Registry Repository (if needed)
+        run: |
+          if ! gcloud artifacts repositories describe "gcr.io/${{ secrets.GCP_PROJECT_ID }}" --location=US &>/dev/null; then
+            echo "Creating repository in Artifact Registry..."
+            gcloud artifacts repositories create "gcr.io/${{ secrets.GCP_PROJECT_ID }}" --repository-format=docker --location=US --project="${{ secrets.GCP_PROJECT_ID }}"
+          else
+            echo "Repository already exists."
+          fi
+
       - name: Deploy Backend to Cloud Run
         run: |
           gcloud run deploy backend \
