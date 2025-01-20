@@ -81,6 +81,9 @@ jobs:
       - name: Build frontend
         run: cd frontend && npm run build
 
+      - name: Create GCP service account key file
+        run: echo "${{ secrets.GCP_SA_KEY }}" > gcp-key.json
+
       - name: Deploy frontend to Cloud Run
         run: |
           gcloud auth activate-service-account --key-file=gcp-key.json
