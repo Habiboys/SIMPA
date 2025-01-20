@@ -5,13 +5,13 @@ FROM node:22-alpine
 WORKDIR /app
 
 # Salin package.json dan package-lock.json (atau yarn.lock) ke kontainer
-COPY fe/package*.json ./
+COPY package*.json ./
 
 # Instal dependensi
 RUN npm install
 
 # Salin sisa kode aplikasi ke dalam kontainer
-COPY fe .
+COPY frontend .
 
 # Bangun aplikasi React untuk produksi
 RUN npm run build
