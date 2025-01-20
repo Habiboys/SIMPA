@@ -71,4 +71,4 @@ jobs:
             --allow-unauthenticated \
             --set-env-vars \
             --port=80 \
-            --set-env-vars API_URL=${{ secrets.API_URL }}
+            
