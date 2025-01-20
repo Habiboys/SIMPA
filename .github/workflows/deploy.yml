@@ -12,14 +12,17 @@ jobs:
   backend:
     runs-on: ubuntu-latest
     steps:
+      # Checkout code dari repository
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # Setup Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '22'
 
+      # Cache node_modules untuk backend
       - name: Cache node modules for backend
         uses: actions/cache@v2
         with:
@@ -28,21 +31,24 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
+      # Install dependencies untuk backend
       - name: Install dependencies for backend
         run: cd backend && npm install
 
+      # Build backend
       - name: Build backend
         run: cd backend && npm run build
 
-      - name: Google Authentication
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: "${{ secrets.GCP_SA_KEY }}"  # Menggunakan service account key yang ada di secrets
+      # Buat file key service account GCP
+      - name: Create GCP service account key file
+        run: echo "${{ secrets.GCP_SA_KEY }}" > gcp-key.json
 
+      # Deploy backend ke Cloud Run
       - name: Deploy backend to Cloud Run
         run: |
+          gcloud auth activate-service-account --key-file=gcp-key.json
           gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
-          gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/backend
+          gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/backend ./backend
           gcloud run deploy backend \
             --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/backend \
             --platform managed \
@@ -60,14 +66,17 @@ jobs:
   frontend:
     runs-on: ubuntu-latest
     steps:
+      # Checkout code dari repository
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # Setup Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '22'
 
+      # Cache node_modules untuk frontend
       - name: Cache node modules for frontend
         uses: actions/cache@v2
         with:
@@ -76,21 +85,24 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
+      # Install dependencies untuk frontend
       - name: Install dependencies for frontend
         run: cd frontend && npm install
 
+      # Build frontend
       - name: Build frontend
         run: cd frontend && npm run build
 
-      - name: Google Authentication
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: "${{ secrets.GCP_SA_KEY }}"  # Menggunakan service account key yang ada di secrets
+      # Buat file key service account GCP
+      - name: Create GCP service account key file
+        run: echo "${{ secrets.GCP_SA_KEY }}" > gcp-key.json
 
+      # Deploy frontend ke Cloud Run
       - name: Deploy frontend to Cloud Run
         run: |
+          gcloud auth activate-service-account --key-file=gcp-key.json
           gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
-          gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/frontend
+          gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/frontend ./frontend
           gcloud run deploy frontend \
             --image gcr.io/${{ secrets.GCP_PROJECT_ID }}/frontend \
             --platform managed \
