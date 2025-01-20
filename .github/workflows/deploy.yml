@@ -34,12 +34,13 @@ jobs:
       - name: Build backend
         run: cd backend && npm run build
 
-      - name: Create GCP service account key file
-        run: echo "${{ secrets.GCP_SA_KEY }}" > gcp-key.json
+      - name: Google Authentication
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: "${{ secrets.GCP_SA_KEY }}"  # Menggunakan service account key yang ada di secrets
 
       - name: Deploy backend to Cloud Run
         run: |
-          gcloud auth activate-service-account --key-file=gcp-key.json
           gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
           gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/backend
           gcloud run deploy backend \
@@ -81,12 +82,13 @@ jobs:
       - name: Build frontend
         run: cd frontend && npm run build
 
-      - name: Create GCP service account key file
-        run: echo "${{ secrets.GCP_SA_KEY }}" > gcp-key.json
+      - name: Google Authentication
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: "${{ secrets.GCP_SA_KEY }}"  # Menggunakan service account key yang ada di secrets
 
       - name: Deploy frontend to Cloud Run
         run: |
-          gcloud auth activate-service-account --key-file=gcp-key.json
           gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
           gcloud builds submit --tag gcr.io/${{ secrets.GCP_PROJECT_ID }}/frontend
           gcloud run deploy frontend \
