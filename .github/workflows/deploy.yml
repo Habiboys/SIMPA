@@ -3,26 +3,23 @@ name: CI/CD to Cloud Run
 on:
   push:
     branches:
-      - main  # Ubah jika menggunakan branch lain
+      - main
   pull_request:
     branches:
-      - main  # Ubah jika menggunakan branch lain
+      - main
 
 jobs:
-  backend:
+  deploy-backend:
     runs-on: ubuntu-latest
     steps:
-      # Checkout code dari repository
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Setup Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '22'
 
-      # Cache node_modules untuk backend
       - name: Cache node modules for backend
         uses: actions/cache@v2
         with:
@@ -31,19 +28,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      # Install dependencies untuk backend
       - name: Install dependencies for backend
         run: cd backend && npm install
 
-      # Build backend
       - name: Build backend
         run: cd backend && npm run build
 
-      # Buat file key service account GCP
       - name: Create GCP service account key file
-        run: echo "${{ secrets.GCP_SA_KEY }}" > gcp-key.json
+        run: echo "${{ secrets.GCP_SA_KEY }}" | base64 -d > gcp-key.json
 
-      # Deploy backend ke Cloud Run
       - name: Deploy backend to Cloud Run
         run: |
           gcloud auth activate-service-account --key-file=gcp-key.json
@@ -63,20 +56,17 @@ jobs:
               DB_PASSWORD=${{ secrets.DB_PASSWORD }},\
               DB_NAME=${{ secrets.DB_NAME }}
 
-  frontend:
+  deploy-frontend:
     runs-on: ubuntu-latest
     steps:
-      # Checkout code dari repository
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Setup Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '22'
 
-      # Cache node_modules untuk frontend
       - name: Cache node modules for frontend
         uses: actions/cache@v2
         with:
@@ -85,19 +75,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      # Install dependencies untuk frontend
       - name: Install dependencies for frontend
         run: cd frontend && npm install
 
-      # Build frontend
       - name: Build frontend
         run: cd frontend && npm run build
 
-      # Buat file key service account GCP
       - name: Create GCP service account key file
-        run: echo "${{ secrets.GCP_SA_KEY }}" > gcp-key.json
+        run: echo "${{ secrets.GCP_SA_KEY }}" | base64 -d > gcp-key.json
 
-      # Deploy frontend ke Cloud Run
       - name: Deploy frontend to Cloud Run
         run: |
           gcloud auth activate-service-account --key-file=gcp-key.json
