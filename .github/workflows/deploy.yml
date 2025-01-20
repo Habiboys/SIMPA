@@ -32,13 +32,9 @@ jobs:
         with:
           project_id: "${{ secrets.GCP_PROJECT_ID }}"
 
-      - name: Create Artifact Registry Repository
-        run: |
-          gcloud artifacts repositories create "gcr.io/${{ secrets.GCP_PROJECT_ID }}" \
-            --repository-format=docker \
-            --location=US \
-            --project="${{ secrets.GCP_PROJECT_ID }}"
-            
+      - name: Authenticate Docker with GCP
+        run: gcloud auth configure-docker
+
       # Deploy Backend
       - name: Build and Push Backend Docker Image
         run: |
