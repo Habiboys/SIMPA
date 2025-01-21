@@ -4,12 +4,19 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
   pull_request:
     branches:
       - main
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
 
 jobs:
-  deploy:
+  deploy-backend:
+    if: contains(github.event.paths, 'backend/')
     runs-on: ubuntu-latest
     permissions:
       contents: "read"
@@ -43,7 +50,6 @@ jobs:
           docker build -t $IMAGE_NAME .
           docker push $IMAGE_NAME
 
-
       - name: Deploy Backend to Cloud Run
         run: |
           gcloud run deploy backend \
@@ -53,6 +59,33 @@ jobs:
             --allow-unauthenticated \
             --port=3000 \
             --set-env-vars JWT_SECRET=${{ secrets.JWT_SECRET }},JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }},DB_HOST=${{ secrets.DB_HOST }},DB_PORT=${{ secrets.DB_PORT }},DB_USERNAME=${{ secrets.DB_USERNAME }},DB_PASSWORD=${{ secrets.DB_PASSWORD }},DB_NAME=${{ secrets.DB_NAME }}
+
+  deploy-frontend:
+    if: contains(github.event.paths, 'frontend/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: "read"
+      id-token: "write"
+
+    steps:
+      # Checkout source code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Authenticate with Google Cloud
+      - name: Google Auth
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: "${{ secrets.GCP_SA_KEY }}"
+
+      # Set up Cloud SDK
+      - name: Set up Cloud SDK
+        uses: "google-github-actions/setup-gcloud@v1"
+        with:
+          project_id: "${{ secrets.GCP_PROJECT_ID }}"
+
+      - name: Authenticate Docker with GCP
+        run: gcloud auth configure-docker
 
       # Deploy Frontend
       - name: Build and Push Frontend Docker Image
@@ -69,5 +102,4 @@ jobs:
             --region=${{ secrets.GCP_REGION }} \
             --platform=managed \
             --allow-unauthenticated \
-            --port=80 \
-            
+            --port=80

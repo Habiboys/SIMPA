@@ -1,54 +1,52 @@
-import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { apiRequest } from '../utils/api';
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { apiRequest } from "../utils/api";
 
 const Register = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    username: '',
-    password: '',
-    confirmPassword: ''
+    username: "",
+    password: "",
+    confirmPassword: "",
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     // Cek jika user sudah login
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
-      navigate('/dashboard');
+      navigate("/dashboard");
     }
   }, [navigate]);
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setIsLoading(true);
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Password tidak cocok');
+      setError("Password tidak cocok");
       setIsLoading(false);
       return;
     }
 
     try {
-      const response = await apiRequest("/auth/login", "POST", {
+      const response = await apiRequest("/auth/register", "POST", {
         username: formData.username,
         password: formData.password,
-        confirmPassword: formData.confirmPassword 
+        confirmPassword: formData.confirmPassword,
       });
 
-     
-
       if (response.data) {
-        navigate('/login');
+        navigate("/login");
       }
     } catch (err) {
       // Tampilkan pesan error yang lebih spesifik
@@ -57,7 +55,7 @@ const Register = () => {
         // Jika error validation dari class-validator
         setError(errorMessage[0]);
       } else {
-        setError(errorMessage || 'Terjadi kesalahan saat registrasi');
+        setError(errorMessage || "Terjadi kesalahan saat registrasi");
       }
     } finally {
       setIsLoading(false);
@@ -69,7 +67,7 @@ const Register = () => {
       <div className="card w-96 bg-base-100 shadow-xl">
         <div className="card-body">
           <h2 className="card-title justify-center mb-4">Register</h2>
-          
+
           {error && (
             <div className="alert alert-error mb-4">
               <span>{error}</span>
@@ -120,18 +118,18 @@ const Register = () => {
             </div>
 
             <div className="form-control mt-6">
-              <button 
-                type="submit" 
-                className={`btn btn-primary ${isLoading ? 'loading' : ''}`}
+              <button
+                type="submit"
+                className={`btn btn-primary ${isLoading ? "loading" : ""}`}
                 disabled={isLoading}
               >
-                {isLoading ? 'Loading...' : 'Register'}
+                {isLoading ? "Loading..." : "Register"}
               </button>
             </div>
           </form>
 
           <div className="text-center mt-4">
-            Sudah punya akun?{' '}
+            Sudah punya akun?{" "}
             <Link to="/login" className="link link-primary">
               Login
             </Link>

@@ -26,6 +26,7 @@ function App() {
           // src/App.jsx
 <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
   <Route element={<DashboardLayout />}>
+    <Route path="/" element={<DashboardPage />} />
     <Route path="/dashboard" element={<DashboardPage />} />
     <Route path="/ruangan" element={<Ruangan />} />
     <Route path="/model" element={<ModelManagementPage />} />
