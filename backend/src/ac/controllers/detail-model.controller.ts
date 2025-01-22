@@ -1,11 +1,19 @@
 // src/ac/controllers/detail-model.controller.ts
-import { Controller, Get, Post, Put, Delete, Body, Param, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, NotFoundException, UseGuards } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DetailModel } from '../../entities/detail-model.entity';
 import { JenisModel } from '../../entities/jenis-model.entity';
 import { CreateDetailModelDto, UpdateDetailModelDto } from '../dto/detail-model.dto';
 
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../../auth/guards/roles.guard';  // Import the RolesGuard
+import { Roles } from '../../auth/decorators/role.decorator';  // Import the Roles decorator
+import { Role } from '../../enums/role.enum';  
+
+
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.ADMIN) 
 @Controller('detail-model')
 export class DetailModelController {
   constructor(

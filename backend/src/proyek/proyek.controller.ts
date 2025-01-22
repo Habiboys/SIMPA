@@ -16,6 +16,9 @@ import { UpdateGedungDto } from './dto/update-gedung.dto';
 import { CreateRuanganDto } from './dto/create-ruangan.dto';
 import { UpdateRuanganDto } from './dto/update-ruangan.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';  // Import the RolesGuard
+import { Roles } from '../auth/decorators/role.decorator';  // Import the Roles decorator
+import { Role } from '../enums/role.enum';  
 import {
   ApiTags,
   ApiOperation,
@@ -26,7 +29,8 @@ import {
 
 @ApiTags('Proyek')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.ADMIN) 
 @Controller('proyek')
 export class ProyekController {
   constructor(private readonly proyekService: ProyekService) {}
@@ -43,7 +47,7 @@ export class ProyekController {
   createProyek(@Body() createProyekDto: CreateProyekDto) {
     return this.proyekService.createProyek(createProyekDto);
   }
-  // sadad
+  
   @Get()
   @ApiOperation({ summary: 'Mendapatkan semua proyek' })
   @ApiResponse({

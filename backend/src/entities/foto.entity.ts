@@ -15,6 +15,9 @@ export class Foto {
   id_maintenance: number;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
+  nama: string;
+  
+  @Column({ type: 'varchar', length: 255, nullable: true })
   foto: string;
 
   @Column({ type: 'enum', enum: FotoStatus, nullable: true })

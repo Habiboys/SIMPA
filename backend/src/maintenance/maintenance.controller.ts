@@ -4,11 +4,13 @@ import {
   Post,
   Body,
   NotFoundException,
+  BadRequestException,
   Get,
   Param,
   ParseIntPipe,
   Res,
   Query,
+  UseGuards
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between } from 'typeorm';
@@ -16,14 +18,19 @@ import { Response } from 'express';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ExcelJS from 'exceljs';
-
+import { MaintenanceKategori } from '../entities/maintenance.entity';
 import { Maintenance } from '../entities/maintenance.entity';
 import { HasilPemeriksaan } from '../entities/hasil-pemeriksaan.entity';
 import { HasilPembersihan } from '../entities/hasil-pembersihan.entity';
 import { Foto } from '../entities/foto.entity';
 import { Unit } from '../entities/unit.entity';
 import { CreateMaintenanceDto } from './dto/maintenance.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';  // Import the RolesGuard
+import { Roles } from '../auth/decorators/role.decorator';  // Import the Roles decorator
+import { Role } from '../enums/role.enum'; 
 
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('maintenance')
 export class MaintenanceController {
   constructor(
@@ -39,45 +46,60 @@ export class MaintenanceController {
     private unitRepo: Repository<Unit>,
   ) {}
 
+  @Roles(Role.LAPANGAN) 
   @Post()
   async create(@Body() dto: CreateMaintenanceDto) {
     const queryRunner =
       this.maintenanceRepo.manager.connection.createQueryRunner();
-
+  
     await queryRunner.connect();
     await queryRunner.startTransaction();
-
+  
     try {
       // Find the unit first
       const unit = await this.unitRepo.findOne({ where: { id: dto.id_unit } });
       if (!unit) {
         throw new NotFoundException(`Unit with ID ${dto.id_unit} not found`);
       }
+  
+      // Validate indoor/outdoor category
+      if (dto.kategori === MaintenanceKategori.INDOOR && dto.palet_outdoor) {
+        throw new BadRequestException(
+          'Palet outdoor should not be uploaded for an indoor category'
+        );
+      }
+  
+      if (dto.kategori === MaintenanceKategori.OUTDOOR && dto.palet_indoor) {
+        throw new BadRequestException(
+          'Palet indoor should not be uploaded for an outdoor category'
+        );
+      }
+  
       const uploadDir = path.join(process.cwd(), 'uploads');
       if (!fs.existsSync(uploadDir)) {
         fs.mkdirSync(uploadDir, { recursive: true });
       }
-
+  
       // Handle palet_indoor
       let paletIndoorFilename = null;
       if (dto.palet_indoor) {
         const bufferIndoor = Buffer.from(dto.palet_indoor, 'base64');
         paletIndoorFilename = `${Date.now()}-indoor-${Math.random().toString(36).substring(7)}.jpg`;
         const filepathIndoor = path.join(uploadDir, paletIndoorFilename);
-
+  
         await fs.promises.writeFile(filepathIndoor, bufferIndoor);
       }
-
+  
       // Handle palet_outdoor
       let paletOutdoorFilename = null;
       if (dto.palet_outdoor) {
         const bufferOutdoor = Buffer.from(dto.palet_outdoor, 'base64');
         paletOutdoorFilename = `${Date.now()}-outdoor-${Math.random().toString(36).substring(7)}.jpg`;
         const filepathOutdoor = path.join(uploadDir, paletOutdoorFilename);
-
+  
         await fs.promises.writeFile(filepathOutdoor, bufferOutdoor);
       }
-
+  
       // Create maintenance record
       const maintenance = this.maintenanceRepo.create({
         id_unit: dto.id_unit,
@@ -88,10 +110,10 @@ export class MaintenanceController {
         palet_outdoor: paletOutdoorFilename, // Simpan nama file
         kategori: dto.kategori,
       });
-
+  
       const savedMaintenance = await queryRunner.manager.save(maintenance);
-
-      // Create hasil pemeriksaan records
+  
+      // Create hasil pemeriksaan and pembersihan records
       const hasilPemeriksaanPromises = dto.hasil_pemeriksaan.map((hp) => {
         const hasilPemeriksaan = this.hasilPemeriksaanRepo.create({
           id_maintenance: savedMaintenance.id,
@@ -101,8 +123,7 @@ export class MaintenanceController {
         });
         return queryRunner.manager.save(hasilPemeriksaan);
       });
-
-      // Create hasil pembersihan records
+  
       const hasilPembersihanPromises = dto.hasil_pembersihan.map((hp) => {
         const hasilPembersihan = this.hasilPembersihanRepo.create({
           id_maintenance: savedMaintenance.id,
@@ -113,33 +134,33 @@ export class MaintenanceController {
         });
         return queryRunner.manager.save(hasilPembersihan);
       });
-
+  
       // Handle foto uploads
-
       const fotoPromises = dto.foto.map(async (f) => {
         const buffer = Buffer.from(f.foto, 'base64');
         const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
         const filepath = path.join(uploadDir, filename);
-
+  
         await fs.promises.writeFile(filepath, buffer);
-
+  
         const foto = this.fotoRepo.create({
           id_maintenance: savedMaintenance.id,
           maintenance: savedMaintenance,
           foto: filename,
           status: f.status,
+          nama: f.nama, 
         });
         return queryRunner.manager.save(foto);
       });
-
+  
       await Promise.all([
         ...hasilPemeriksaanPromises,
         ...hasilPembersihanPromises,
         ...fotoPromises,
       ]);
-
+  
       await queryRunner.commitTransaction();
-
+  
       return {
         message: 'Maintenance data created successfully',
         maintenance_id: savedMaintenance.id,
@@ -151,7 +172,9 @@ export class MaintenanceController {
       await queryRunner.release();
     }
   }
+  
 
+  @Roles(Role.ADMIN, Role.LAPANGAN) 
   @Get()
   async findAll() {
     return await this.maintenanceRepo.find({
@@ -171,6 +194,7 @@ export class MaintenanceController {
     });
   }
 
+  @Roles(Role.ADMIN)
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     const maintenance = await this.maintenanceRepo.findOne({
@@ -194,6 +218,7 @@ export class MaintenanceController {
     return maintenance;
   }
 
+  @Roles(Role.ADMIN)
   @Get('project/:projectId')
   async findByProject(
     @Param('projectId', ParseIntPipe) projectId: number,
@@ -247,6 +272,7 @@ export class MaintenanceController {
     });
   }
 
+  @Roles(Role.ADMIN)
   @Get('export/project/:projectId')
   async exportProjectData(
     @Param('projectId', ParseIntPipe) projectId: number,
@@ -644,6 +670,7 @@ export class MaintenanceController {
     res.end();
   }
 
+  @Roles(Role.ADMIN)
   @Get('foto/:filename')
   async getFoto(@Param('filename') filename: string, @Res() res: Response) {
     const filepath = path.join(process.cwd(), 'uploads', filename);

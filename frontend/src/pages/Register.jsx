@@ -1,12 +1,16 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { apiRequest } from "../utils/api";
+import Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
 
+const MySwal = withReactContent(Swal);
 const Register = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
     password: "",
+    role: "",
     confirmPassword: "",
   });
   const [error, setError] = useState("");
@@ -26,6 +30,12 @@ const Register = () => {
       [e.target.name]: e.target.value,
     });
   };
+  const handleRoleChange = (e) => {
+    setFormData({
+      ...formData,
+      role: e.target.value,
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,28 +49,60 @@ const Register = () => {
     }
 
     try {
+      // Tampilkan SweetAlert loading
+      Swal.fire({
+        title: "Loading...",
+        text: "Proses registrasi sedang berlangsung...",
+        didOpen: () => {
+          Swal.showLoading();
+        },
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showConfirmButton: false,
+      });
+
       const response = await apiRequest("/auth/register", "POST", {
         username: formData.username,
         password: formData.password,
         confirmPassword: formData.confirmPassword,
+        role: formData.role,
       });
 
-      if (response.data) {
-        navigate("/login");
+      console.log("Response from backend:", response);  // Debugging line
+
+      if (response.success) {
+        Swal.fire({
+          title: "Berhasil!",
+          text: response.message,
+          icon: "success",
+          title: 'Resgister Berhasil!',
+          text: response.message,
+          showConfirmButton: false, // Menyembunyikan tombol OK
+          timer: 1000, // Menunggu 2 detik
+        }).then(() => {
+          navigate("/login");
+        });
+      } else {
+        Swal.fire({
+          title: "Gagal!",
+          text: response.message,
+          icon: "error",
+          confirmButtonText: "OK",
+        });
       }
     } catch (err) {
-      // Tampilkan pesan error yang lebih spesifik
-      const errorMessage = err.response?.data?.message;
-      if (Array.isArray(errorMessage)) {
-        // Jika error validation dari class-validator
-        setError(errorMessage[0]);
-      } else {
-        setError(errorMessage || "Terjadi kesalahan saat registrasi");
-      }
+      Swal.fire({
+        title: "Gagal!",
+        text: "Terjadi kesalahan, silakan coba lagi.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     } finally {
       setIsLoading(false);
     }
   };
+
+
 
   return (
     <div className="min-h-screen bg-base-200 flex items-center justify-center">
@@ -115,6 +157,35 @@ const Register = () => {
                 className="input input-bordered"
                 required
               />
+            </div>
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Pilih Role</span>
+              </label>
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="role"
+                    value="admin"
+                    checked={formData.role === "admin"}
+                    onChange={handleRoleChange}
+                    className="radio radio-primary"
+                  />
+                  <span>Admin</span>
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="role"
+                    value="lapangan"
+                    checked={formData.role === "lapangan"}
+                    onChange={handleRoleChange}
+                    className="radio radio-primary"
+                  />
+                  <span>Lapangan</span>
+                </label>
+              </div>
             </div>
 
             <div className="form-control mt-6">

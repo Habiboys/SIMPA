@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, PencilLine, Trash2, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Plus, PencilLine, Trash2, Filter, ChevronLeft, ChevronRight, Thermometer } from 'lucide-react';
 import { useProject } from '../contexts/ProjectContext';
 import { apiRequest } from '../utils/api';
 import Swal from 'sweetalert2';
@@ -283,11 +283,14 @@ const UnitManagementPage = () => {
   // Welcome screen if no project selected
   if (!selectedProject) {
     return (
-      <div className="hero min-h-[calc(100vh-4rem)] bg-base-200">
+      <div className="hero min-h-[400px] bg-base-200 rounded-box">
         <div className="hero-content text-center">
           <div className="max-w-md">
-            <h1 className="text-5xl font-bold">Selamat Datang!</h1>
-            <p className="py-6">Silakan pilih proyek terlebih dahulu untuk mengelola unit AC.</p>
+            <Thermometer className="w-16 h-16 mx-auto mb-4 opacity-20" />
+            <h1 className="text-2xl font-bold">Selamat Datang!</h1>
+            <p className="py-4 opacity-70">
+              Silakan pilih proyek terlebih dahulu untuk mengelola unit Ac
+            </p>
           </div>
         </div>
       </div>

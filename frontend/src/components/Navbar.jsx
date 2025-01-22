@@ -110,13 +110,6 @@ const Navbar = ({ toggleSidebar }) => {
                 <div className="badge badge-neutral mt-2 capitalize">{user?.role || 'Guest'}</div>
               </div>
           
-                <li><a className="gap-4"><Home size={18} /> Dashboard</a></li>
-              
-              <li><a className="gap-4"><User size={18} /> My Profile</a></li>
-              <li><a className="gap-4"><Calendar size={18} /> My Schedule</a></li>
-              <li><a className="gap-4"><FileText size={18} /> My Documents</a></li>
-              <div className="divider my-0"></div>
-              <li><a className="gap-4"><Settings size={18} /> Settings</a></li>
               <li><a onClick={handleLogout} className="gap-4 text-error hover:bg-error/10 active:!bg-error/20"><LogOut size={18} /> Logout</a></li>
             </ul>
           </div>

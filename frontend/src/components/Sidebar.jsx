@@ -67,10 +67,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
   return (
     <>
-      <div 
-        className={`fixed inset-y-0 left-0 w-80 bg-base-100 shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 z-50 flex flex-col
-          ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
-      >
+    <div 
+  className={`fixed inset-y-0 left-0 w-80 bg-base-100 shadow-xl transform transition-transform duration-2000 ease-in-out lg:translate-x-0 z-30 flex flex-col ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+>
         {/* Header */}
         <div className="h-16 border-b flex items-center justify-between px-4">
           <div className="flex items-center gap-3">
@@ -128,7 +127,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       {/* Overlay for mobile */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm lg:hidden z-40"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm lg:hidden z-20"
           onClick={toggleSidebar}
         />
       )}

@@ -21,19 +21,25 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async register(registerDto: RegisterDto): Promise<User> {
+  async register(registerDto: RegisterDto): Promise<any> {
     // Check if username already exists
     const existingUser = await this.userRepository.findOne({
       where: { username: registerDto.username },
     });
 
     if (existingUser) {
-      throw new ConflictException('Username already exists');
+      return {
+        success: false,
+        message: 'Username already exists',
+      };
     }
 
     // Validate password match
     if (registerDto.password !== registerDto.confirmPassword) {
-      throw new BadRequestException('Passwords do not match');
+      return {
+        success: false,
+        message: 'Passwords do not match',
+      };
     }
 
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
@@ -45,59 +51,75 @@ export class AuthService {
     });
 
     try {
-      return await this.userRepository.save(user);
+      const savedUser = await this.userRepository.save(user);
+      return {
+          success: true,
+          message: 'Registration successful',
+          user: {
+            id: savedUser.id,
+            username: savedUser.username,
+            role: savedUser.role,
+          },
+      };
     } catch (error) {
-      if (error.code === 'ER_DUP_ENTRY') {
-        // MySQL error code for duplicate entry
-        throw new ConflictException('Username already exists');
-      }
-      throw error;
+      return {
+        success: false,
+        message: 'An unexpected error occurred, please try again',
+      };
     }
+}
+
+
+
+async login(loginDto: LoginDto) {
+  const user = await this.userRepository.findOne({
+    where: { username: loginDto.username },
+  });
+
+  if (!user) {
+    throw new UnauthorizedException('Invalid credentials');
   }
 
-  async login(loginDto: LoginDto) {
-    const user = await this.userRepository.findOne({
-      where: { username: loginDto.username },
-    });
+  const isPasswordValid = await bcrypt.compare(
+    loginDto.password,
+    user.password,
+  );
 
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    const isPasswordValid = await bcrypt.compare(
-      loginDto.password,
-      user.password,
-    );
-
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    const payload = { sub: user.id, username: user.username, role: user.role };
-
-    const [accessToken, refreshToken] = await Promise.all([
-      this.jwtService.signAsync(payload, {
-        secret: process.env.JWT_SECRET,
-        expiresIn: '15m',
-      }),
-      this.jwtService.signAsync(payload, {
-        secret: process.env.JWT_REFRESH_SECRET,
-        expiresIn: '7d',
-      }),
-    ]);
-
-    // Save refresh token to database
-    await this.userRepository.update(user.id, {
-      refreshToken: await bcrypt.hash(refreshToken, 10),
-    });
-
-    return {
-      accessToken,
-      refreshToken,
-      // role: user.role,
-      user: user,
-    };
+  if (!isPasswordValid) {
+    throw new UnauthorizedException('Invalid credentials');
   }
+
+  const payload = { sub: user.id, username: user.username, role: user.role };
+
+  const [accessToken, refreshToken] = await Promise.all([
+    this.jwtService.signAsync(payload, {
+      secret: process.env.JWT_SECRET,
+      expiresIn: '15m',
+    }),
+    this.jwtService.signAsync(payload, {
+      secret: process.env.JWT_REFRESH_SECRET,
+      expiresIn: '7d',
+    }),
+  ]);
+
+  // Save refresh token to database
+  await this.userRepository.update(user.id, {
+    refreshToken: await bcrypt.hash(refreshToken, 10),
+  });
+
+  return {
+    success: true, // Pastikan ada indikator success
+    message: 'Login successful', // Pesan sukses
+    accessToken,
+    refreshToken,
+    user: { // Hanya kembalikan data user tanpa password
+      id: user.id,
+      username: user.username,
+      role: user.role,
+    },
+  };
+}
+
 
   // async refreshToken(refreshToken: string) {
   //   try {

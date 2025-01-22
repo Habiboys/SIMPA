@@ -32,6 +32,9 @@ class HasilPembersihanDto {
 
 class FotoDto {
   @IsString()
+  nama: string;
+  
+  @IsString()
   foto: string;
 
   @IsEnum(FotoStatus)
