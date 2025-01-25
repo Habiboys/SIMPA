@@ -3,7 +3,7 @@
 const BASE_URL = import.meta.env.VITE_API_URL|| "http://localhost:3000";
 
 // Fungsi umum untuk fetch
-export const apiRequest = async (endpoint, method = "GET", body = null, isProtected = false) => {
+export const apiRequest = async (endpoint, method = "GET", body = null, isProtected = false, isFile = false) => {
   const headers = { "Content-Type": "application/json" };
 
   // Tambahkan Authorization jika perlu
@@ -27,12 +27,22 @@ export const apiRequest = async (endpoint, method = "GET", body = null, isProtec
     if (response.status === 401 && isProtected) {
       const refreshed = await refreshToken();
       if (refreshed) {
-        return apiRequest(endpoint, method, body, isProtected);
+        return apiRequest(endpoint, method, body, isProtected, isFile);
       } else {
         throw new Error("Session expired. Silakan login ulang.");
       }
     }
 
+    // Handle file response
+    if (isFile) {
+      if (!response.ok) {
+        throw new Error("Gagal mengunduh file.");
+      }
+      const blob = await response.blob();
+      return blob;
+    }
+
+    // Handle JSON response
     const data = await response.json();
 
     if (!response.ok) {

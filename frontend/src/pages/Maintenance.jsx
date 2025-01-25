@@ -18,6 +18,7 @@ const MaintenancePage = () => {
   const [activeTab, setActiveTab] = useState('pemeriksaan');
   const [sortConfig, setSortConfig] = useState({ field: 'tanggal', direction: 'desc' });
   const [showExportModal, setShowExportModal] = useState(false);
+  const [exportLoading, setExportLoading] = useState(false);
   const [exportDateRange, setExportDateRange] = useState({
     startDate: '',
     endDate: ''
@@ -130,16 +131,32 @@ const MaintenancePage = () => {
     return filtered;
   };
 
+  
+
   const handleExport = async () => {
     try {
+      setExportLoading(true);
       let endpoint = `/maintenance/export/project/${selectedProject.id}`;
       if (exportDateRange.startDate && exportDateRange.endDate) {
         endpoint += `?startDate=${exportDateRange.startDate}&endDate=${exportDateRange.endDate}`;
       }
-      window.location.href = `${BASE_URL}${endpoint}`;
+  
+      const blob = await apiRequest(endpoint, "GET", null, true, true);
+  
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `maintenance_export_${selectedProject.id}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+  
       setShowExportModal(false);
     } catch (error) {
-      showAlert('Gagal mengexport data', 'error');
+      showAlert(error.message || 'Gagal mengexport data', 'error');
+    } finally {
+      setExportLoading(false);
     }
   };
 
@@ -181,11 +198,18 @@ const MaintenancePage = () => {
           </p>
         </div>
         <button 
-          onClick={() => setShowExportModal(true)} 
-          className="btn btn-primary"
-        >
-          <Download className="w-4 h-4" /> Export Data
-        </button>
+  onClick={() => setShowExportModal(true)} 
+  className="btn btn-primary"
+  disabled={exportLoading}
+>
+  {exportLoading ? (
+    <span className="loading loading-spinner"></span>
+  ) : (
+    <>
+      <Download className="w-4 h-4" /> Export Data
+    </>
+  )}
+</button>
       </div>
 
       <div className="card bg-base-100 shadow-xl">
