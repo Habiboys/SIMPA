@@ -11,7 +11,7 @@ import { Roles } from '../../auth/decorators/role.decorator';  // Import the Rol
 import { Role } from '../../enums/role.enum';  
 
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(Role.ADMIN) 
+@Roles(Role.ADMIN, Role.LAPANGAN) 
 @Controller('jenis-model')
 export class JenisModelController {
   constructor(

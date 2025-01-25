@@ -10,7 +10,7 @@ import { Role } from '../../enums/role.enum';
 
 
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(Role.ADMIN) 
+@Roles(Role.ADMIN, Role.LAPANGAN) 
 @Controller('merek')
 export class MerekController {
   constructor(

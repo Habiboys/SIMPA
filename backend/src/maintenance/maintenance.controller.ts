@@ -136,22 +136,27 @@ export class MaintenanceController {
       });
   
       // Handle foto uploads
-      const fotoPromises = dto.foto.map(async (f) => {
-        const buffer = Buffer.from(f.foto, 'base64');
-        const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
-        const filepath = path.join(uploadDir, filename);
-  
-        await fs.promises.writeFile(filepath, buffer);
-  
-        const foto = this.fotoRepo.create({
-          id_maintenance: savedMaintenance.id,
-          maintenance: savedMaintenance,
-          foto: filename,
-          status: f.status,
-          nama: f.nama, 
-        });
-        return queryRunner.manager.save(foto);
-      });
+    // Di dalam create method
+const fotoPromises = dto.foto.map(async (f) => {
+  if (!f.nama) {
+    throw new BadRequestException('Nama foto harus diisi');
+  }
+
+  const buffer = Buffer.from(f.foto, 'base64');
+  const filename = `${Date.now()}-${f.nama}.jpg`; // Gunakan nama foto
+  const filepath = path.join(uploadDir, filename);
+
+  await fs.promises.writeFile(filepath, buffer);
+
+  const foto = this.fotoRepo.create({
+    id_maintenance: savedMaintenance.id,
+    maintenance: savedMaintenance,
+    foto: filename,
+    status: f.status,
+    nama: f.nama, // Simpan nama foto
+  });
+  return queryRunner.manager.save(foto);
+});
   
       await Promise.all([
         ...hasilPemeriksaanPromises,
@@ -651,6 +656,7 @@ export class MaintenanceController {
         currentRow += 2; // Add space between maintenance records
       });
     }
+    
 
     // Set response headers
     const proyek = maintenances[0]?.unit?.ruangan?.gedung?.proyek;

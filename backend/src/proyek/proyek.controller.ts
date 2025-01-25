@@ -30,7 +30,7 @@ import {
 @ApiTags('Proyek')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(Role.ADMIN) 
+@Roles(Role.ADMIN, Role.LAPANGAN) 
 @Controller('proyek')
 export class ProyekController {
   constructor(private readonly proyekService: ProyekService) {}

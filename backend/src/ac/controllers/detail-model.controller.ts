@@ -13,7 +13,7 @@ import { Role } from '../../enums/role.enum';
 
 
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(Role.ADMIN) 
+@Roles(Role.ADMIN, Role.LAPANGAN) 
 @Controller('detail-model')
 export class DetailModelController {
   constructor(
