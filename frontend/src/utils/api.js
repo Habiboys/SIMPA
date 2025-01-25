@@ -1,6 +1,6 @@
 // const BASE_URL = "http://localhost:3000";
 // const BASE_URL = "https://backend-593079612074.asia-southeast1.run.app";
-const BASE_URL = import.meta.env.API_URL|| "http://localhost:3000";
+const BASE_URL = import.meta.env.VITE_API_URL|| "http://localhost:3000";
 
 // Fungsi umum untuk fetch
 export const apiRequest = async (endpoint, method = "GET", body = null, isProtected = false) => {

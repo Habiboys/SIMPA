@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useProject } from '../contexts/ProjectContext';
-import { apiRequest } from '../utils/api';
+import { apiRequest, BASE_URL } from '../utils/api';
 import { 
   FileSpreadsheet, Calendar, Download, Building2,
   ArrowUpDown
@@ -136,7 +136,7 @@ const MaintenancePage = () => {
       if (exportDateRange.startDate && exportDateRange.endDate) {
         endpoint += `?startDate=${exportDateRange.startDate}&endDate=${exportDateRange.endDate}`;
       }
-      window.location.href = `${import.meta.env.API_URL}${endpoint}`;
+      window.location.href = `${BASE_URL}${endpoint}`;
       setShowExportModal(false);
     } catch (error) {
       showAlert('Gagal mengexport data', 'error');
@@ -510,7 +510,7 @@ const MaintenancePage = () => {
             <div key={foto.id} className="card bg-base-200">
               <figure className="px-4 pt-4">
                 <img
-                  src={`${import.meta.env.VITE_API_URL}/maintenance/foto/${foto.foto}`}
+                  src={`${BASE_URL}/maintenance/foto/${foto.foto}`}
                   alt="Foto Sebelum"
                   className="rounded-lg object-cover w-full h-48"
                 />
@@ -534,7 +534,7 @@ const MaintenancePage = () => {
             <div key={foto.id} className="card bg-base-200">
               <figure className="px-4 pt-4">
                 <img
-                  src={`${import.meta.env.API_URL}/maintenance/foto/${foto.foto}`}
+                  src={`${BASE_URL}/maintenance/foto/${foto.foto}`}
                   alt="Foto Sesudah"
                   className="rounded-lg object-cover w-full h-48"
                 />

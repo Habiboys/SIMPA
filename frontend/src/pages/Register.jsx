@@ -72,11 +72,9 @@ const Register = () => {
 
       if (response.success) {
         Swal.fire({
-          title: "Berhasil!",
-          text: response.message,
+          title: 'Register Berhasil!',  // Keep only one title
+          text: response.message,       // Keep only one text
           icon: "success",
-          title: 'Resgister Berhasil!',
-          text: response.message,
           showConfirmButton: false, // Menyembunyikan tombol OK
           timer: 1000, // Menunggu 2 detik
         }).then(() => {
