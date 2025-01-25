@@ -136,7 +136,7 @@ const MaintenancePage = () => {
       if (exportDateRange.startDate && exportDateRange.endDate) {
         endpoint += `?startDate=${exportDateRange.startDate}&endDate=${exportDateRange.endDate}`;
       }
-      window.location.href = `${import.meta.env.VITE_API_URL}${endpoint}`;
+      window.location.href = `${import.meta.env.API_URL}${endpoint}`;
       setShowExportModal(false);
     } catch (error) {
       showAlert('Gagal mengexport data', 'error');
