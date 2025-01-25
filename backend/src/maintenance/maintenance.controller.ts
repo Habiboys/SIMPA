@@ -484,183 +484,197 @@ if (dto.palet_indoor) {
           });
           currentRow++;
         }
-        if (maintenance.palet_indoor || maintenance.palet_outdoor) {
-          detailSheet.mergeCells(`A${currentRow}:C${currentRow}`);
-          detailSheet.getCell(`A${currentRow}`).value = 'Foto Palet Unit';
-          detailSheet.getCell(`A${currentRow}`).font = { bold: true };
-          currentRow++;
+     // Palet Photos Section
+if (maintenance.palet_indoor || maintenance.palet_outdoor) {
+  detailSheet.mergeCells(`A${currentRow}:C${currentRow}`);
+  detailSheet.getCell(`A${currentRow}`).value = 'Foto Palet Unit';
+  detailSheet.getCell(`A${currentRow}`).font = { bold: true };
+  currentRow++;
 
-          // Add headers for pallet photos
-          const palletPhotoHeaders = [
-            'No',
-            'Foto Palet Indoor',
-            'Foto Palet Outdoor',
-          ];
-          const headerRow = detailSheet.addRow(palletPhotoHeaders);
-          headerRow.eachCell((cell) => {
-            cell.style = headerStyle;
-          });
-          currentRow++;
+  // Add headers for pallet photos based on unit category
+  const palletPhotoHeaders = [
+    'No',
+    maintenance.kategori === MaintenanceKategori.INDOOR ? 'Foto Palet Indoor' : 'Foto Palet Outdoor',
+  ];
+  const headerRow = detailSheet.addRow(palletPhotoHeaders);
+  headerRow.eachCell((cell) => {
+    cell.style = headerStyle;
+  });
+  currentRow++;
 
-          // Adjust column widths for pallet photos
-          detailSheet.getColumn(1).width = 5; // No
-          detailSheet.getColumn(2).width = 40; // Foto Palet Indoor
-          detailSheet.getColumn(3).width = 40; // Foto Palet Outdoor
+  // Adjust column widths for pallet photos
+  detailSheet.getColumn(1).width = 5; // No
+  detailSheet.getColumn(2).width = 40; // Foto Palet
 
-          // Add row for pallet photos
-          detailSheet.addRow([1, '', '']);
+  // Add row for pallet photos
+  detailSheet.addRow([1, '']);
 
-          try {
-            // Add Indoor Pallet Photo
-            if (maintenance.palet_indoor) {
-              const imagePathIndoor = path.join(
-                process.cwd(),
-                'uploads',
-                maintenance.palet_indoor,
-              );
-              if (fs.existsSync(imagePathIndoor)) {
-                const imageIdIndoor = workbook.addImage({
-                  filename: imagePathIndoor,
-                  extension: 'jpeg',
-                });
-                detailSheet.addImage(imageIdIndoor, {
-                  tl: {
-                    col: 1,
-                    row: currentRow - 1,
-                    colWidth: 1,
-                    rowHeight: 1,
-                    worksheet: detailSheet,
-                  },
-                  ext: { width: 150, height: 100 },
-                });
-              }
-            }
+  try {
+    // Add Indoor Pallet Photo (only for indoor units)
+    if (maintenance.kategori === MaintenanceKategori.INDOOR && maintenance.palet_indoor) {
+      const imagePathIndoor = path.join(
+        process.cwd(),
+        'uploads',
+        maintenance.palet_indoor,
+      );
+      if (fs.existsSync(imagePathIndoor)) {
+        const imageIdIndoor = workbook.addImage({
+          filename: imagePathIndoor,
+          extension: 'jpeg',
+        });
+        detailSheet.addImage(imageIdIndoor, {
+          tl: {
+            col: 1,
+            row: currentRow - 1,
+            colWidth: 1,
+            rowHeight: 1,
+            worksheet: detailSheet,
+          },
+          ext: { width: 150, height: 100 },
+        });
+      }
+    }
 
-            // Add Outdoor Pallet Photo
-            if (maintenance.palet_outdoor) {
-              const imagePathOutdoor = path.join(
-                process.cwd(),
-                'uploads',
-                maintenance.palet_outdoor,
-              );
-              if (fs.existsSync(imagePathOutdoor)) {
-                const imageIdOutdoor = workbook.addImage({
-                  filename: imagePathOutdoor,
-                  extension: 'jpeg',
-                });
-                detailSheet.addImage(imageIdOutdoor, {
-                  tl: {
-                    col: 2,
-                    row: currentRow - 1,
-                    colWidth: 1,
-                    rowHeight: 1,
-                    worksheet: detailSheet,
-                  },
-                  ext: { width: 150, height: 100 },
-                });
-              }
-            }
-          } catch (error) {
-            console.error(
-              `Error adding pallet images for maintenance ${maintenance.id}:`,
-              error,
-            );
-          }
+    // Add Outdoor Pallet Photo (only for outdoor units)
+    if (maintenance.kategori === MaintenanceKategori.OUTDOOR && maintenance.palet_outdoor) {
+      const imagePathOutdoor = path.join(
+        process.cwd(),
+        'uploads',
+        maintenance.palet_outdoor,
+      );
+      if (fs.existsSync(imagePathOutdoor)) {
+        const imageIdOutdoor = workbook.addImage({
+          filename: imagePathOutdoor,
+          extension: 'jpeg',
+        });
+        detailSheet.addImage(imageIdOutdoor, {
+          tl: {
+            col: 1,
+            row: currentRow - 1,
+            colWidth: 1,
+            rowHeight: 1,
+            worksheet: detailSheet,
+          },
+          ext: { width: 150, height: 100 },
+        });
+      }
+    }
+  } catch (error) {
+    console.error(
+      `Error adding pallet images for maintenance ${maintenance.id}:`,
+      error,
+    );
+  }
 
-          currentRow += 8; // Space for images
-          currentRow += 2; // Additional space after pallet photos section
-        }
+  currentRow += 8; // Space for images
+  currentRow += 2; // Additional space after pallet photos section
+}
 
         // Photos Section (Separate table)
-        if (maintenance.foto?.length) {
-          detailSheet.mergeCells(`A${currentRow}:C${currentRow}`);
-          detailSheet.getCell(`A${currentRow}`).value = 'Dokumentasi Foto';
-          detailSheet.getCell(`A${currentRow}`).font = { bold: true };
-          currentRow++;
+     // Photos Section (Separate table)
+if (maintenance.foto?.length) {
+  detailSheet.mergeCells(`A${currentRow}:C${currentRow}`);
+  detailSheet.getCell(`A${currentRow}`).value = 'Dokumentasi Foto';
+  detailSheet.getCell(`A${currentRow}`).font = { bold: true };
+  currentRow++;
 
-          // Add headers for photos
-          const photoHeaders = ['No', 'Foto Sebelum', 'Foto Sesudah'];
-          const headerRow = detailSheet.addRow(photoHeaders);
-          headerRow.eachCell((cell) => {
-            cell.style = headerStyle;
+  // Add headers for photos
+  const photoHeaders = ['No', 'Foto Sebelum', 'Foto Sesudah'];
+  const headerRow = detailSheet.addRow(photoHeaders);
+  headerRow.eachCell((cell) => {
+    cell.style = headerStyle;
+  });
+  currentRow++;
+
+  // Adjust column widths specifically for photos
+  detailSheet.getColumn(1).width = 5; // No
+  detailSheet.getColumn(2).width = 40; // Foto Sebelum
+  detailSheet.getColumn(3).width = 40; // Foto Sesudah
+
+  // Group photos by before/after
+  const sebelumFotos = maintenance.foto.filter(
+    (f) => f?.status === 'sebelum',
+  );
+  const sesudahFotos = maintenance.foto.filter(
+    (f) => f?.status === 'sesudah',
+  );
+  const maxFotos = Math.max(sebelumFotos.length, sesudahFotos.length);
+
+  for (let i = 0; i < maxFotos; i++) {
+    // Add row for photo names
+    detailSheet.addRow([i + 1, '', '']);
+    currentRow++;
+
+    // Add photo names
+    if (sebelumFotos[i]?.nama || sesudahFotos[i]?.nama) {
+      detailSheet.addRow([
+        '', // Empty for No column
+        sebelumFotos[i]?.nama || '', // Nama foto sebelum
+        sesudahFotos[i]?.nama || '', // Nama foto sesudah
+      ]);
+      currentRow++;
+    }
+
+    try {
+      // Add Sebelum Foto
+      if (sebelumFotos[i]?.foto) {
+        const imagePath = path.join(
+          process.cwd(),
+          'uploads',
+          sebelumFotos[i].foto,
+        );
+        if (fs.existsSync(imagePath)) {
+          const imageId = workbook.addImage({
+            filename: imagePath,
+            extension: 'jpeg',
           });
-          currentRow++;
-
-          // Adjust column widths specifically for photos
-          detailSheet.getColumn(1).width = 5; // No
-          detailSheet.getColumn(2).width = 40; // Foto Sebelum
-          detailSheet.getColumn(3).width = 40; // Foto Sesudah
-
-          // Group photos by before/after
-          const sebelumFotos = maintenance.foto.filter(
-            (f) => f?.status === 'sebelum',
-          );
-          const sesudahFotos = maintenance.foto.filter(
-            (f) => f?.status === 'sesudah',
-          );
-          const maxFotos = Math.max(sebelumFotos.length, sesudahFotos.length);
-
-          for (let i = 0; i < maxFotos; i++) {
-            detailSheet.addRow([i + 1, '', '']);
-
-            try {
-              if (sebelumFotos[i]?.foto) {
-                const imagePath = path.join(
-                  process.cwd(),
-                  'uploads',
-                  sebelumFotos[i].foto,
-                );
-                if (fs.existsSync(imagePath)) {
-                  const imageId = workbook.addImage({
-                    filename: imagePath,
-                    extension: 'jpeg',
-                  });
-                  detailSheet.addImage(imageId, {
-                    tl: {
-                      col: 1,
-                      row: currentRow - 1,
-                      colWidth: 1,
-                      rowHeight: 1,
-                      worksheet: detailSheet,
-                    },
-                    ext: { width: 150, height: 100 },
-                  });
-                }
-              }
-
-              if (sesudahFotos[i]?.foto) {
-                const imagePath = path.join(
-                  process.cwd(),
-                  'uploads',
-                  sesudahFotos[i].foto,
-                );
-                if (fs.existsSync(imagePath)) {
-                  const imageId = workbook.addImage({
-                    filename: imagePath,
-                    extension: 'jpeg',
-                  });
-                  detailSheet.addImage(imageId, {
-                    tl: {
-                      col: 2,
-                      row: currentRow - 1,
-                      colWidth: 1,
-                      rowHeight: 1,
-                      worksheet: detailSheet,
-                    },
-                    ext: { width: 150, height: 100 },
-                  });
-                }
-              }
-            } catch (error) {
-              console.error(
-                `Error adding images for maintenance ${maintenance.id}:`,
-                error,
-              );
-            }
-
-            currentRow += 8; // Space for images
-          }
+          detailSheet.addImage(imageId, {
+            tl: {
+              col: 1,
+              row: currentRow - 3, // Adjust row position for image
+              colWidth: 1,
+              rowHeight: 1,
+              worksheet: detailSheet,
+            },
+            ext: { width: 150, height: 100 },
+          });
         }
+      }
+
+      // Add Sesudah Foto
+      if (sesudahFotos[i]?.foto) {
+        const imagePath = path.join(
+          process.cwd(),
+          'uploads',
+          sesudahFotos[i].foto,
+        );
+        if (fs.existsSync(imagePath)) {
+          const imageId = workbook.addImage({
+            filename: imagePath,
+            extension: 'jpeg',
+          });
+          detailSheet.addImage(imageId, {
+            tl: {
+              col: 2,
+              row: currentRow - 3, // Adjust row position for image
+              colWidth: 1,
+              rowHeight: 1,
+              worksheet: detailSheet,
+            },
+            ext: { width: 150, height: 100 },
+          });
+        }
+      }
+    } catch (error) {
+      console.error(
+        `Error adding images for maintenance ${maintenance.id}:`,
+        error,
+      );
+    }
+
+    currentRow += 8; // Space for images
+  }
+}
 
         currentRow += 2; // Add space between maintenance records
       });
