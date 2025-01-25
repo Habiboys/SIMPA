@@ -97,4 +97,4 @@ jobs:
             --platform=managed \
             --allow-unauthenticated \
             --port=80 \
-            --set-env-vars VITE_API_URL =${{ secrets.VITE_API_URL }}
+            --set-env-vars VITE_API_URL=${{ secrets.VITE_API_URL }}
