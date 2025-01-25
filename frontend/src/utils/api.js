@@ -70,3 +70,5 @@ const refreshToken = async () => {
     return false;
   }
 };
+
+export { BASE_URL };
