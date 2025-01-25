@@ -6,6 +6,7 @@ import {
   IsString,
   IsArray,
   ValidateNested,
+  IsOptional
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { MaintenanceKategori } from '../../entities/maintenance.entity';
@@ -53,10 +54,12 @@ export class CreateMaintenanceDto {
   nama_pemeriksaan: string;
 
   @IsString()
-  palet_indoor: string;
+  @IsOptional()
+  palet_indoor?: string | null;
 
   @IsString()
-  palet_outdoor: string;
+  @IsOptional()
+  palet_outdoor?: string | null;
 
   @IsEnum(MaintenanceKategori)
   kategori: MaintenanceKategori;

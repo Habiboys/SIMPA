@@ -10,7 +10,8 @@ import {
   ParseIntPipe,
   Res,
   Query,
-  UseGuards
+  UseGuards,
+  Logger,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Between } from 'typeorm';
@@ -26,13 +27,14 @@ import { Foto } from '../entities/foto.entity';
 import { Unit } from '../entities/unit.entity';
 import { CreateMaintenanceDto } from './dto/maintenance.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';  // Import the RolesGuard
-import { Roles } from '../auth/decorators/role.decorator';  // Import the Roles decorator
-import { Role } from '../enums/role.enum'; 
+import { RolesGuard } from '../auth/guards/roles.guard'; // Import the RolesGuard
+import { Roles } from '../auth/decorators/role.decorator'; // Import the Roles decorator
+import { Role } from '../enums/role.enum';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('maintenance')
 export class MaintenanceController {
+  private readonly logger = new Logger(MaintenanceController.name);
   constructor(
     @InjectRepository(Maintenance)
     private maintenanceRepo: Repository<Maintenance>,
@@ -46,60 +48,64 @@ export class MaintenanceController {
     private unitRepo: Repository<Unit>,
   ) {}
 
-  @Roles(Role.LAPANGAN) 
+  @Roles(Role.LAPANGAN)
   @Post()
   async create(@Body() dto: CreateMaintenanceDto) {
+    console.log('Endpoint /maintenance POST diakses'); 
+    this.logger.log('Endpoint /maintenance POST diakses');
+    this.logger.debug('Payload yang diterima:', dto);
     const queryRunner =
       this.maintenanceRepo.manager.connection.createQueryRunner();
-  
+
     await queryRunner.connect();
     await queryRunner.startTransaction();
-  
+
     try {
       // Find the unit first
       const unit = await this.unitRepo.findOne({ where: { id: dto.id_unit } });
       if (!unit) {
         throw new NotFoundException(`Unit with ID ${dto.id_unit} not found`);
       }
-  
+
       // Validate indoor/outdoor category
       if (dto.kategori === MaintenanceKategori.INDOOR && dto.palet_outdoor) {
         throw new BadRequestException(
-          'Palet outdoor should not be uploaded for an indoor category'
+          'Palet outdoor should not be uploaded for an indoor category',
         );
       }
-  
+
       if (dto.kategori === MaintenanceKategori.OUTDOOR && dto.palet_indoor) {
         throw new BadRequestException(
-          'Palet indoor should not be uploaded for an outdoor category'
+          'Palet indoor should not be uploaded for an outdoor category',
         );
       }
-  
+
       const uploadDir = path.join(process.cwd(), 'uploads');
       if (!fs.existsSync(uploadDir)) {
         fs.mkdirSync(uploadDir, { recursive: true });
       }
-  
+
       // Handle palet_indoor
-      let paletIndoorFilename = null;
-      if (dto.palet_indoor) {
-        const bufferIndoor = Buffer.from(dto.palet_indoor, 'base64');
-        paletIndoorFilename = `${Date.now()}-indoor-${Math.random().toString(36).substring(7)}.jpg`;
-        const filepathIndoor = path.join(uploadDir, paletIndoorFilename);
-  
-        await fs.promises.writeFile(filepathIndoor, bufferIndoor);
-      }
-  
+     // Modify palet handling
+let paletIndoorFilename = null;
+if (dto.palet_indoor) {
+  const bufferIndoor = Buffer.from(dto.palet_indoor, 'base64');
+  paletIndoorFilename = `${Date.now()}-indoor-${Math.random().toString(36).substring(7)}.jpg`;
+  const filepathIndoor = path.join(uploadDir, paletIndoorFilename);
+  await fs.promises.writeFile(filepathIndoor, bufferIndoor);
+}
+
+// Similar changes for palet_outdoor
+
       // Handle palet_outdoor
       let paletOutdoorFilename = null;
       if (dto.palet_outdoor) {
         const bufferOutdoor = Buffer.from(dto.palet_outdoor, 'base64');
         paletOutdoorFilename = `${Date.now()}-outdoor-${Math.random().toString(36).substring(7)}.jpg`;
         const filepathOutdoor = path.join(uploadDir, paletOutdoorFilename);
-  
         await fs.promises.writeFile(filepathOutdoor, bufferOutdoor);
       }
-  
+
       // Create maintenance record
       const maintenance = this.maintenanceRepo.create({
         id_unit: dto.id_unit,
@@ -110,9 +116,9 @@ export class MaintenanceController {
         palet_outdoor: paletOutdoorFilename, // Simpan nama file
         kategori: dto.kategori,
       });
-  
+
       const savedMaintenance = await queryRunner.manager.save(maintenance);
-  
+
       // Create hasil pemeriksaan and pembersihan records
       const hasilPemeriksaanPromises = dto.hasil_pemeriksaan.map((hp) => {
         const hasilPemeriksaan = this.hasilPemeriksaanRepo.create({
@@ -123,7 +129,7 @@ export class MaintenanceController {
         });
         return queryRunner.manager.save(hasilPemeriksaan);
       });
-  
+
       const hasilPembersihanPromises = dto.hasil_pembersihan.map((hp) => {
         const hasilPembersihan = this.hasilPembersihanRepo.create({
           id_maintenance: savedMaintenance.id,
@@ -134,38 +140,38 @@ export class MaintenanceController {
         });
         return queryRunner.manager.save(hasilPembersihan);
       });
-  
+
       // Handle foto uploads
-    // Di dalam create method
-const fotoPromises = dto.foto.map(async (f) => {
-  if (!f.nama) {
-    throw new BadRequestException('Nama foto harus diisi');
-  }
+      // Di dalam create method
+      const fotoPromises = dto.foto.map(async (f) => {
+        if (!f.nama) {
+          throw new BadRequestException('Nama foto harus diisi');
+        }
 
-  const buffer = Buffer.from(f.foto, 'base64');
-  const filename = `${Date.now()}-${f.nama}.jpg`; // Gunakan nama foto
-  const filepath = path.join(uploadDir, filename);
+        const buffer = Buffer.from(f.foto, 'base64');
+        const filename = `${Date.now()}-${f.nama}.jpg`; // Gunakan nama foto
+        const filepath = path.join(uploadDir, filename);
 
-  await fs.promises.writeFile(filepath, buffer);
+        await fs.promises.writeFile(filepath, buffer);
 
-  const foto = this.fotoRepo.create({
-    id_maintenance: savedMaintenance.id,
-    maintenance: savedMaintenance,
-    foto: filename,
-    status: f.status,
-    nama: f.nama, // Simpan nama foto
-  });
-  return queryRunner.manager.save(foto);
-});
-  
+        const foto = this.fotoRepo.create({
+          id_maintenance: savedMaintenance.id,
+          maintenance: savedMaintenance,
+          foto: filename,
+          status: f.status,
+          nama: f.nama, // Simpan nama foto
+        });
+        return queryRunner.manager.save(foto);
+      });
+
       await Promise.all([
         ...hasilPemeriksaanPromises,
         ...hasilPembersihanPromises,
         ...fotoPromises,
       ]);
-  
+
       await queryRunner.commitTransaction();
-  
+
       return {
         message: 'Maintenance data created successfully',
         maintenance_id: savedMaintenance.id,
@@ -177,9 +183,8 @@ const fotoPromises = dto.foto.map(async (f) => {
       await queryRunner.release();
     }
   }
-  
 
-  @Roles(Role.ADMIN, Role.LAPANGAN) 
+  @Roles(Role.ADMIN, Role.LAPANGAN)
   @Get()
   async findAll() {
     return await this.maintenanceRepo.find({
@@ -486,7 +491,11 @@ const fotoPromises = dto.foto.map(async (f) => {
           currentRow++;
 
           // Add headers for pallet photos
-          const palletPhotoHeaders = ['No', 'Foto Palet Indoor', 'Foto Palet Outdoor'];
+          const palletPhotoHeaders = [
+            'No',
+            'Foto Palet Indoor',
+            'Foto Palet Outdoor',
+          ];
           const headerRow = detailSheet.addRow(palletPhotoHeaders);
           headerRow.eachCell((cell) => {
             cell.style = headerStyle;
@@ -656,7 +665,6 @@ const fotoPromises = dto.foto.map(async (f) => {
         currentRow += 2; // Add space between maintenance records
       });
     }
-    
 
     // Set response headers
     const proyek = maintenances[0]?.unit?.ruangan?.gedung?.proyek;

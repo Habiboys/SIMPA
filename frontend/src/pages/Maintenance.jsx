@@ -497,47 +497,58 @@ const MaintenancePage = () => {
                 </div>
               </div>
 
-              {/* Foto-foto */}
-              <div className={`mt-6 ${activeTab !== 'foto' ? 'hidden' : ''}`}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="font-bold mb-4">Foto Sebelum</h4>
-                    <div className="grid gap-4">
-                      {selectedMaintenance.foto
-                        .filter(f => f.status === 'sebelum')
-                        .map((foto) => (
-                          <div key={foto.id} className="card bg-base-200">
-                            <figure className="px-4 pt-4">
-                              <img
-                                src={`${import.meta.env.VITE_API_URL}/maintenance/foto/${foto.foto}`}
-                                alt="Foto Sebelum"
-                                className="rounded-lg object-cover w-full h-48"
-                              />
-                            </figure>
-                          </div>
-                        ))}
-                    </div>
-                  </div>
-                  <div>
-                    <h4 className="font-bold mb-4">Foto Sesudah</h4>
-                    <div className="grid gap-4">
-                      {selectedMaintenance.foto
-                        .filter(f => f.status === 'sesudah')
-                        .map((foto) => (
-                          <div key={foto.id} className="card bg-base-200">
-                            <figure className="px-4 pt-4">
-                              <img
-                                src={`${import.meta.env.VITE_API_URL}/maintenance/foto/${foto.foto}`}
-                                alt="Foto Sesudah"
-                                className="rounded-lg object-cover w-full h-48"
-                              />
-                            </figure>
-                          </div>
-                        ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
+{/* Foto-foto */}
+<div className={`mt-6 ${activeTab !== 'foto' ? 'hidden' : ''}`}>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {/* Foto Sebelum */}
+    <div>
+      <h4 className="font-bold mb-4">Foto Sebelum</h4>
+      <div className="grid gap-4">
+        {selectedMaintenance.foto
+          .filter(f => f.status === 'sebelum')
+          .map((foto) => (
+            <div key={foto.id} className="card bg-base-200">
+              <figure className="px-4 pt-4">
+                <img
+                  src={`${import.meta.env.VITE_API_URL}/maintenance/foto/${foto.foto}`}
+                  alt="Foto Sebelum"
+                  className="rounded-lg object-cover w-full h-48"
+                />
+                {/* Tambahkan nama foto di sini */}
+                <figcaption className="text-center mt-2 text-sm text-gray-600">
+                  {foto.nama} {/* Menampilkan nama foto */}
+                </figcaption>
+              </figure>
+            </div>
+          ))}
+      </div>
+    </div>
+
+    {/* Foto Sesudah */}
+    <div>
+      <h4 className="font-bold mb-4">Foto Sesudah</h4>
+      <div className="grid gap-4">
+        {selectedMaintenance.foto
+          .filter(f => f.status === 'sesudah')
+          .map((foto) => (
+            <div key={foto.id} className="card bg-base-200">
+              <figure className="px-4 pt-4">
+                <img
+                  src={`${import.meta.env.API_URL}/maintenance/foto/${foto.foto}`}
+                  alt="Foto Sesudah"
+                  className="rounded-lg object-cover w-full h-48"
+                />
+                {/* Tambahkan nama foto di sini */}
+                <figcaption className="text-center mt-2 text-sm text-gray-600">
+                  {foto.nama} {/* Menampilkan nama foto */}
+                </figcaption>
+              </figure>
+            </div>
+          ))}
+      </div>
+    </div>
+  </div>
+</div>
 
               <div className="modal-action">
                 <button className="btn" onClick={closeModal}>
