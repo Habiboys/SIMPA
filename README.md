@@ -82,7 +82,7 @@
 
 </div>
 
-### Spesifikasi Teknis
+<!-- ### Spesifikasi Teknis
 
 #### Backend
 - **Framework:** NestJS (Node.js)
@@ -106,101 +106,7 @@
 - **Containerization:** Docker
 - **Cloud Storage:** AWS S3
 - **Monitoring:** Sentry
-
-## 📦 Struktur Proyek
-
-```
-simpa/
-├── backend/
-│   ├── src/
-│   │   ├── auth/           # Autentikasi dan otorisasi
-│   │   ├── projects/       # Manajemen proyek
-│   │   ├── units/          # Manajemen unit AC
-│   │   ├── maintenance/    # Pencatatan pemeliharaan
-│   │   ├── users/          # Manajemen pengguna
-│   │   └── common/         # Shared utilities dan helpers
-│   ├── test/               # Unit dan integration tests
-│   └── docs/               # Dokumentasi API
-│
-├── frontend/
-│   ├── src/
-│   │   ├── components/     # Reusable components
-│   │   ├── pages/          # Halaman aplikasi
-│   │   ├── services/       # API services
-│   │   ├── store/          # State management
-│   │   └── utils/          # Helper functions
-│   ├── public/             # Asset statis
-│   └── tests/              # Unit tests
-│
-└── docs/                   # Dokumentasi proyek
-```
-
-## 🚀 Panduan Instalasi
-
-### Prasyarat
-- Node.js (v14 atau lebih baru)
-- MySQL (v8.0 atau lebih baru)
-- Git
-- npm atau yarn
-
-### Langkah Instalasi
-
-1. **Clone Repository**
-   ```bash
-   git clone https://github.com/Habiboys/SIMPA.git
-   cd SIMPA
-   ```
-
-2. **Setup Backend**
-   ```bash
-   cd backend
-   npm install
-   
-   # Konfigurasi environment
-   cp .env.example .env
-   # Edit .env sesuai konfigurasi lokal
-   
-   # Jalankan migrations
-   npm run migration:run
-   
-   # Start development server
-   npm run start:dev
-   ```
-
-3. **Setup Frontend**
-   ```bash
-   cd frontend
-   npm install
-   
-   # Konfigurasi environment
-   cp .env.example .env
-   # Edit .env sesuai kebutuhan
-   
-   # Start development server
-   npm run dev
-   ```
-
-### Environment Variables
-
-#### Backend (.env)
-```env
-# Database
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=root
-DB_PASSWORD=your_password
-DB_NAME=simpa_db
-
-# JWT
-JWT_SECRET=your_jwt_secret
-JWT_EXPIRATION=24h
-```
-
-#### Frontend (.env)
-```env
-VITE_API_URL=http://localhost:3000
-VITE_AWS_S3_URL=https://your-bucket.s3.region.amazonaws.com
-```
+ -->
 
 ## 📱 Fitur per Role Pengguna
 

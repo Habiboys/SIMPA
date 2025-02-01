@@ -135,18 +135,39 @@ const MaintenancePage = () => {
 
   const handleExport = async () => {
     try {
-      setExportLoading(true);
       let endpoint = `/maintenance/export/project/${selectedProject.id}`;
-      if (exportDateRange.startDate && exportDateRange.endDate) {
-        endpoint += `?startDate=${exportDateRange.startDate}&endDate=${exportDateRange.endDate}`;
+  
+      // Format tanggal jika ada
+      const formattedStartDate = exportDateRange.startDate
+        ? format(new Date(exportDateRange.startDate), 'yyyy-MM-dd')
+        : null;
+      const formattedEndDate = exportDateRange.endDate
+        ? format(new Date(exportDateRange.endDate), 'yyyy-MM-dd')
+        : null;
+  
+      // Tambahkan parameter tanggal ke endpoint jika ada
+      if (formattedStartDate && formattedEndDate) {
+        endpoint += `?startDate=${formattedStartDate}&endDate=${formattedEndDate}`;
       }
   
+      // Gunakan apiRequest untuk mengunduh file
       const blob = await apiRequest(endpoint, "GET", null, true, true);
   
+      // Tentukan nama file
+      let fileName;
+      if (formattedStartDate && formattedEndDate) {
+        // Jika export berdasarkan tanggal, tambahkan rentang tanggal ke nama file
+        fileName = `maintenance_export_${selectedProject.nama}_${formattedStartDate}_${formattedEndDate}.xlsx`;
+      } else {
+        // Jika export semua, cukup gunakan nama project
+        fileName = `maintenance_export_${selectedProject.nama}.xlsx`;
+      }
+  
+      // Handle file download
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `maintenance_export_${selectedProject.id}.xlsx`;
+      a.download = fileName;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -155,8 +176,6 @@ const MaintenancePage = () => {
       setShowExportModal(false);
     } catch (error) {
       showAlert(error.message || 'Gagal mengexport data', 'error');
-    } finally {
-      setExportLoading(false);
     }
   };
 
@@ -335,69 +354,69 @@ const MaintenancePage = () => {
 
       {/* Export Modal */}
       <dialog id="modal-export" className={`modal ${showExportModal ? 'modal-open' : ''}`}>
-        <div className="modal-box">
-          <h3 className="font-bold text-lg mb-4">Export Data Maintenance</h3>
-          <div className="form-control gap-4">
-            <label className="label cursor-pointer">
-              <span className="label-text">Export semua data</span>
-              <input
-                type="radio"
-                name="export-type"
-                className="radio"
-                checked={!exportDateRange.startDate}
-                onChange={() => setExportDateRange({ startDate: '', endDate: '' })}
-              />
+  <div className="modal-box">
+    <h3 className="font-bold text-lg mb-4">Export Data Maintenance</h3>
+    <div className="form-control gap-4">
+      <label className="label cursor-pointer">
+        <span className="label-text">Export semua data</span>
+        <input
+          type="radio"
+          name="export-type"
+          className="radio"
+          checked={!exportDateRange.startDate}
+          onChange={() => setExportDateRange({ startDate: '', endDate: '' })}
+        />
+      </label>
+      <label className="label cursor-pointer">
+        <span className="label-text">Export berdasarkan tanggal</span>
+        <input
+          type="radio"
+          name="export-type"
+          className="radio"
+          checked={!!exportDateRange.startDate}
+          onChange={() => setExportDateRange({ startDate: format(new Date(), 'yyyy-MM-dd'), endDate: format(new Date(), 'yyyy-MM-dd') })}
+        />
+      </label>
+      {exportDateRange.startDate && (
+        <div className="grid grid-cols-2 gap-4 mt-4">
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Tanggal Mulai</span>
             </label>
-            <label className="label cursor-pointer">
-              <span className="label-text">Export berdasarkan tanggal</span>
-              <input
-                type="radio"
-                name="export-type"
-                className="radio"
-                checked={!!exportDateRange.startDate}
-                onChange={() => setExportDateRange({ startDate: format(new Date(), 'yyyy-MM-dd'), endDate: format(new Date(), 'yyyy-MM-dd') })}
-              />
-            </label>
-            {exportDateRange.startDate && (
-              <div className="grid grid-cols-2 gap-4 mt-4">
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Tanggal Mulai</span>
-                  </label>
-                  <input
-                    type="date"
-                    className="input input-bordered"
-                    value={exportDateRange.startDate}
-                    onChange={(e) => setExportDateRange({ ...exportDateRange, startDate: e.target.value })}
-                  />
-                </div>
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Tanggal Akhir</span>
-                  </label>
-                  <input
-                    type="date"
-                    className="input input-bordered"
-                    value={exportDateRange.endDate}
-                    onChange={(e) => setExportDateRange({ ...exportDateRange, endDate: e.target.value })}
-                  />
-                </div>
-              </div>
-            )}
+            <input
+              type="date"
+              className="input input-bordered"
+              value={exportDateRange.startDate}
+              onChange={(e) => setExportDateRange({ ...exportDateRange, startDate: e.target.value })}
+            />
           </div>
-          <div className="modal-action">
-            <button className="btn btn-primary" onClick={handleExport}>
-              <Download className="w-4 h-4" /> Export
-            </button>
-            <button className="btn" onClick={() => setShowExportModal(false)}>
-              Batal
-            </button>
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Tanggal Akhir</span>
+            </label>
+            <input
+              type="date"
+              className="input input-bordered"
+              value={exportDateRange.endDate}
+              onChange={(e) => setExportDateRange({ ...exportDateRange, endDate: e.target.value })}
+            />
           </div>
         </div>
-        <form method="dialog" className="modal-backdrop">
-          <button onClick={() => setShowExportModal(false)}>close</button>
-        </form>
-      </dialog>
+      )}
+    </div>
+    <div className="modal-action">
+      <button className="btn btn-primary" onClick={handleExport}>
+        <Download className="w-4 h-4" /> Export
+      </button>
+      <button className="btn" onClick={() => setShowExportModal(false)}>
+        Batal
+      </button>
+    </div>
+  </div>
+  <form method="dialog" className="modal-backdrop">
+    <button onClick={() => setShowExportModal(false)}>close</button>
+  </form>
+</dialog>
       {/* Detail Modal */}
       <dialog id="modal-detail" className="modal modal-bottom sm:modal-middle">
         <div className="modal-box max-w-4xl">
