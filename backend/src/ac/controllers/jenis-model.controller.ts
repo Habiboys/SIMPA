@@ -32,6 +32,12 @@ export class JenisModelController {
     });
   }
 
+  @Get('total')
+  async getTotalJenisModel() {
+    const totalJenisModel = await this.jenisModelRepo.count();
+    return { totalJenisModel };
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: number) {
     const jenisModel = await this.jenisModelRepo.findOne({
@@ -74,4 +80,5 @@ export class JenisModelController {
     await this.jenisModelRepo.remove(jenisModel);
     return { message: 'JenisModel deleted successfully' };
   }
+
 }

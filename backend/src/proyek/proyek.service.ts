@@ -158,4 +158,15 @@ export class ProyekService {
     const ruangan = await this.findOneRuangan(gedungId, id);
     return await this.ruanganRepository.remove(ruangan);
   }
+
+ async countProyek(): Promise<number> {
+    return await this.proyekRepository.count();
+  }
+
+  async countGedung(proyekId: number): Promise<number> {
+  const proyek = await this.findOneProyek(proyekId);
+  return await this.gedungRepository.count({
+    where: { proyek: { id: proyek.id } },
+  });
+}
 }

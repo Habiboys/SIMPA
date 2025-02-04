@@ -47,6 +47,19 @@ export class ProyekController {
   createProyek(@Body() createProyekDto: CreateProyekDto) {
     return this.proyekService.createProyek(createProyekDto);
   }
+
+    @Get('total')
+  @ApiOperation({ summary: 'Menghitung total proyek' })
+  @ApiResponse({
+    status: 200,
+    description: 'Total proyek',
+    type: Number,
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async getTotalProyek() {
+    const totalProyek = await this.proyekService.countProyek();
+    return { totalProyek };
+  }
   
   @Get()
   @ApiOperation({ summary: 'Mendapatkan semua proyek' })
@@ -100,6 +113,8 @@ export class ProyekController {
   removeProyek(@Param('id') id: string) {
     return this.proyekService.removeProyek(+id);
   }
+
+
 
   // GEDUNG ENDPOINTS
   @Post(':proyekId/gedung')
@@ -177,6 +192,12 @@ export class ProyekController {
   removeGedung(@Param('proyekId') proyekId: string, @Param('id') id: string) {
     return this.proyekService.removeGedung(+proyekId, +id);
   }
+
+  @Get(':proyekId/total-gedung')
+  async getTotalGedung(@Param('proyekId') proyekId: string) {
+      const totalGedung = await this.proyekService.countGedung(+proyekId);
+      return { totalGedung };
+    }
 
   // RUANGAN ENDPOINTS
   @Post(':proyekId/gedung/:gedungId/ruangan')

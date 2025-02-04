@@ -76,10 +76,13 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
             <img src="/images/logosuralaya.jpg" alt="Logo Suralaya" className="w-full h-full object-cover rounded-xl" />
             </div>
+                <a href="/dashboard">
             <div>
+        
               <h1 className="font-bold text-2xl">SIMPA</h1>
               <p className="text-xs text-base-content/60">Management System</p>
             </div>
+            </a>
           </div>
           <button 
             className="btn btn-ghost btn-sm lg:hidden" 

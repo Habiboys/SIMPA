@@ -57,9 +57,11 @@ const Navbar = ({ toggleSidebar }) => {
           </button>
           
           {/* Mobile Title - Show only on mobile */}
+          <a href="/dashboard">
           <div className="flex items-center lg:hidden">
             <h1 className="text-lg font-bold">SIMPA</h1>
           </div>
+          </a>
 
           {/* Desktop Search Bar */}
           {/* <div className="hidden lg:block relative w-64">

@@ -111,4 +111,20 @@ export class UnitController {
     await this.unitRepo.remove(unit);
     return { message: 'Unit deleted successfully' };
   }
+
+  @Get(':proyekId/total')
+async getTotalUnits(@Param('proyekId') proyekId: number) {
+  const totalUnits = await this.unitRepo.count({
+    where: { 
+      ruangan: { 
+        gedung: { 
+          proyek: { id: proyekId } 
+        } 
+      }
+    },
+    relations: ['ruangan', 'ruangan.gedung', 'ruangan.gedung.proyek']
+  });
+
+  return { totalUnits };
+}
 }

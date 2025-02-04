@@ -391,294 +391,266 @@ if (dto.palet_indoor) {
     }, {});
 
     // Create detail sheets for each building
-    for (const gedungId in maintenancesByBuilding) {
-      const building = maintenancesByBuilding[gedungId];
-      const detailSheet = workbook.addWorksheet(`Detail - ${building.nama}`);
+ // Create detail sheets for each building
+for (const gedungId in maintenancesByBuilding) {
+  const building = maintenancesByBuilding[gedungId];
+  const detailSheet = workbook.addWorksheet(`Detail - ${building.nama}`);
 
-      // Set column widths for detail sheet
-      detailSheet.columns = [
-        { width: 5 }, // No
-        { width: 30 }, // Jenis Pemeriksaan/Pembersihan
-        { width: 15 }, // Nilai/Sebelum
-        { width: 15 }, // Sesudah (untuk pembersihan)
-      ];
-
-      let currentRow = 1;
-
-      // Process each maintenance in the building
-      building.maintenances.forEach((maintenance) => {
-        // Add maintenance header
-        detailSheet.mergeCells(`A${currentRow}:E${currentRow}`);
-        detailSheet.getCell(`A${currentRow}`).value = 'Detail Pemeriksaan';
-        detailSheet.getCell(`A${currentRow}`).font = { bold: true, size: 14 };
-        currentRow++;
-
-        // Add unit information header
-        const unitInfo = [
-          `Tanggal: ${new Date(maintenance.tanggal).toLocaleDateString('id-ID')}`,
-          `Ruangan: ${maintenance.unit?.ruangan?.nama || 'N/A'}`,
-          `Model: ${maintenance.unit?.detailModel?.nama_model || 'N/A'} - ${maintenance.unit?.nomor_seri || 'N/A'}`,
-          `Kategori: ${maintenance.unit?.detailModel?.kategori || 'N/A'}`,
-        ].join(' | ');
-
-        detailSheet.mergeCells(`A${currentRow}:E${currentRow}`);
-        detailSheet.getCell(`A${currentRow}`).value = unitInfo;
-        currentRow += 2;
-
-        // Inspection Results Section
-        if (maintenance.hasilPemeriksaan?.length) {
-          detailSheet.mergeCells(`A${currentRow}:E${currentRow}`);
-          detailSheet.getCell(`A${currentRow}`).value = 'Hasil Pemeriksaan';
-          detailSheet.getCell(`A${currentRow}`).font = { bold: true };
-          currentRow++;
-
-          // Add headers for inspection
-          const inspectionHeaders = ['No', 'Jenis Pemeriksaan', 'Nilai'];
-          const headerRow = detailSheet.addRow(inspectionHeaders);
-          headerRow.eachCell((cell) => {
-            cell.style = headerStyle;
-          });
-          currentRow++;
-
-          // Add inspection results
-          maintenance.hasilPemeriksaan.forEach((hp, idx) => {
-            detailSheet.addRow([
-              idx + 1,
-              hp.variablePemeriksaan?.nama_variable || 'N/A',
-              hp.nilai || 'N/A',
-            ]);
-            currentRow++;
-          });
-          currentRow++;
-        }
-
-        // Cleaning Results Section
-        if (maintenance.hasilPembersihan?.length) {
-          detailSheet.mergeCells(`A${currentRow}:E${currentRow}`);
-          detailSheet.getCell(`A${currentRow}`).value = 'Hasil Pembersihan';
-          detailSheet.getCell(`A${currentRow}`).font = { bold: true };
-          currentRow++;
-
-          // Add headers for cleaning
-          const cleaningHeaders = [
-            'No',
-            'Jenis Pembersihan',
-            'Sebelum',
-            'Sesudah',
-          ];
-          const headerRow = detailSheet.addRow(cleaningHeaders);
-          headerRow.eachCell((cell) => {
-            cell.style = headerStyle;
-          });
-          currentRow++;
-
-          // Add cleaning results
-          maintenance.hasilPembersihan.forEach((hp, idx) => {
-            detailSheet.addRow([
-              idx + 1,
-              hp.variablePembersihan?.nama_variable || 'N/A',
-              hp.sebelum?.toString() || 'N/A',
-              hp.sesudah?.toString() || 'N/A',
-            ]);
-            currentRow++;
-          });
-          currentRow++;
-        }
-     // Palet Photos Section
-if (maintenance.palet_indoor || maintenance.palet_outdoor) {
-  detailSheet.mergeCells(`A${currentRow}:C${currentRow}`);
-  detailSheet.getCell(`A${currentRow}`).value = 'Foto Palet Unit';
-  detailSheet.getCell(`A${currentRow}`).font = { bold: true };
-  currentRow++;
-
-  // Add headers for pallet photos based on unit category
-  const palletPhotoHeaders = [
-    'No',
-    maintenance.kategori === MaintenanceKategori.INDOOR ? 'Foto Palet Indoor' : 'Foto Palet Outdoor',
+  // Set uniform column widths for all tables
+  detailSheet.columns = [
+    { width: 5 },  // No
+    { width: 30 }, // Jenis Pemeriksaan/Pembersihan/Foto Palet
+    { width: 15 }, // Nilai/Sebelum/Foto Sebelum
+    { width: 15 }, // Sesudah/Foto Sesudah
   ];
-  const headerRow = detailSheet.addRow(palletPhotoHeaders);
-  headerRow.eachCell((cell) => {
-    cell.style = headerStyle;
-  });
-  currentRow++;
 
-  // Adjust column widths for pallet photos
-  detailSheet.getColumn(1).width = 5; // No
-  detailSheet.getColumn(2).width = 40; // Foto Palet
+  let currentRow = 1;
 
-  // Add row for pallet photos
-  detailSheet.addRow([1, '']);
+  // Process each maintenance in the building
+  building.maintenances.forEach((maintenance) => {
+    const startRow = currentRow; // Start row of the entire detail section
 
-  try {
-    // Add Indoor Pallet Photo (only for indoor units)
-    if (maintenance.kategori === MaintenanceKategori.INDOOR && maintenance.palet_indoor) {
-      const imagePathIndoor = path.join(
-        process.cwd(),
-        'uploads',
-        maintenance.palet_indoor,
-      );
-      if (fs.existsSync(imagePathIndoor)) {
-        const imageIdIndoor = workbook.addImage({
-          filename: imagePathIndoor,
-          extension: 'jpeg',
-        });
-        detailSheet.addImage(imageIdIndoor, {
-          tl: {
-            col: 1,
-            row: currentRow - 1,
-            colWidth: 1,
-            rowHeight: 1,
-            worksheet: detailSheet,
-          },
-          ext: { width: 150, height: 100 },
-        });
-      }
-    }
-
-    // Add Outdoor Pallet Photo (only for outdoor units)
-    if (maintenance.kategori === MaintenanceKategori.OUTDOOR && maintenance.palet_outdoor) {
-      const imagePathOutdoor = path.join(
-        process.cwd(),
-        'uploads',
-        maintenance.palet_outdoor,
-      );
-      if (fs.existsSync(imagePathOutdoor)) {
-        const imageIdOutdoor = workbook.addImage({
-          filename: imagePathOutdoor,
-          extension: 'jpeg',
-        });
-        detailSheet.addImage(imageIdOutdoor, {
-          tl: {
-            col: 1,
-            row: currentRow - 1,
-            colWidth: 1,
-            rowHeight: 1,
-            worksheet: detailSheet,
-          },
-          ext: { width: 150, height: 100 },
-        });
-      }
-    }
-  } catch (error) {
-    console.error(
-      `Error adding pallet images for maintenance ${maintenance.id}:`,
-      error,
-    );
-  }
-
-  currentRow += 8; // Space for images
-  currentRow += 2; // Additional space after pallet photos section
-}
-
-        // Photos Section (Separate table)
-     // Photos Section (Separate table)
-if (maintenance.foto?.length) {
-  detailSheet.mergeCells(`A${currentRow}:C${currentRow}`);
-  detailSheet.getCell(`A${currentRow}`).value = 'Dokumentasi Foto';
-  detailSheet.getCell(`A${currentRow}`).font = { bold: true };
-  currentRow++;
-
-  // Add headers for photos
-  const photoHeaders = ['No', 'Foto Sebelum', 'Foto Sesudah'];
-  const headerRow = detailSheet.addRow(photoHeaders);
-  headerRow.eachCell((cell) => {
-    cell.style = headerStyle;
-  });
-  currentRow++;
-
-  // Adjust column widths specifically for photos
-  detailSheet.getColumn(1).width = 5; // No
-  detailSheet.getColumn(2).width = 40; // Foto Sebelum
-  detailSheet.getColumn(3).width = 40; // Foto Sesudah
-
-  // Group photos by before/after
-  const sebelumFotos = maintenance.foto.filter(
-    (f) => f?.status === 'sebelum',
-  );
-  const sesudahFotos = maintenance.foto.filter(
-    (f) => f?.status === 'sesudah',
-  );
-  const maxFotos = Math.max(sebelumFotos.length, sesudahFotos.length);
-
-  for (let i = 0; i < maxFotos; i++) {
-    // Add row for photo names
-    detailSheet.addRow([i + 1, '', '']);
+    // Add a main header for the entire maintenance record
+    detailSheet.mergeCells(`A${currentRow}:D${currentRow}`);
+    const mainHeaderCell = detailSheet.getCell(`A${currentRow}`);
+    mainHeaderCell.value = 'Detail Pemeriksaan';
+    mainHeaderCell.font = { bold: true, size: 14 };
+    mainHeaderCell.alignment = { horizontal: 'center' };
     currentRow++;
 
-    // Add photo names
-    if (sebelumFotos[i]?.nama || sesudahFotos[i]?.nama) {
-      detailSheet.addRow([
-        '', // Empty for No column
-        sebelumFotos[i]?.nama || '', // Nama foto sebelum
-        sesudahFotos[i]?.nama || '', // Nama foto sesudah
-      ]);
+    // Add unit information header
+    const unitInfo = [
+      `Tanggal: ${new Date(maintenance.tanggal).toLocaleDateString('id-ID')}`,
+      `Ruangan: ${maintenance.unit?.ruangan?.nama || 'N/A'}`,
+      `Model: ${maintenance.unit?.detailModel?.nama_model || 'N/A'} - ${maintenance.unit?.nomor_seri || 'N/A'}`,
+      `Kategori: ${maintenance.unit?.detailModel?.kategori || 'N/A'}`,
+    ].join(' | ');
+    detailSheet.mergeCells(`A${currentRow}:D${currentRow}`);
+    const unitInfoCell = detailSheet.getCell(`A${currentRow}`);
+    unitInfoCell.value = unitInfo;
+    unitInfoCell.alignment = { horizontal: 'center' };
+    currentRow += 2;
+
+    // Inspection Results Section
+    if (maintenance.hasilPemeriksaan?.length) {
+      detailSheet.mergeCells(`A${currentRow}:D${currentRow}`);
+      const inspectionHeaderCell = detailSheet.getCell(`A${currentRow}`);
+      inspectionHeaderCell.value = 'Hasil Pemeriksaan';
+      inspectionHeaderCell.font = { bold: true };
+      inspectionHeaderCell.alignment = { horizontal: 'center' };
+      currentRow++;
+
+      // Add headers for inspection
+      const inspectionHeaders = ['No', 'Jenis Pemeriksaan', 'Nilai', '']; // Empty column to reach D
+      const headerRow = detailSheet.addRow(inspectionHeaders);
+      headerRow.eachCell((cell) => {
+        cell.style = headerStyle;
+        cell.alignment = { horizontal: 'center' };
+      });
+      currentRow++;
+
+      // Add inspection results
+      maintenance.hasilPemeriksaan.forEach((hp, idx) => {
+        const row = detailSheet.addRow([
+          idx + 1,
+          hp.variablePemeriksaan?.nama_variable || 'N/A',
+          hp.nilai || 'N/A',
+          '', // Empty column to reach D
+        ]);
+        row.eachCell((cell) => {
+          cell.alignment = { horizontal: 'left' };
+        });
+        currentRow++;
+      });
       currentRow++;
     }
 
-    try {
-      // Add Sebelum Foto
-      if (sebelumFotos[i]?.foto) {
-        const imagePath = path.join(
-          process.cwd(),
-          'uploads',
-          sebelumFotos[i].foto,
-        );
-        if (fs.existsSync(imagePath)) {
-          const imageId = workbook.addImage({
-            filename: imagePath,
-            extension: 'jpeg',
-          });
-          detailSheet.addImage(imageId, {
-            tl: {
-              col: 1,
-              row: currentRow - 3, // Adjust row position for image
-              colWidth: 1,
-              rowHeight: 1,
-              worksheet: detailSheet,
-            },
-            ext: { width: 150, height: 100 },
-          });
-        }
-      }
+    // Cleaning Results Section
+    if (maintenance.hasilPembersihan?.length) {
+      detailSheet.mergeCells(`A${currentRow}:D${currentRow}`);
+      const cleaningHeaderCell = detailSheet.getCell(`A${currentRow}`);
+      cleaningHeaderCell.value = 'Hasil Pembersihan';
+      cleaningHeaderCell.font = { bold: true };
+      cleaningHeaderCell.alignment = { horizontal: 'center' };
+      currentRow++;
 
-      // Add Sesudah Foto
-      if (sesudahFotos[i]?.foto) {
-        const imagePath = path.join(
-          process.cwd(),
-          'uploads',
-          sesudahFotos[i].foto,
-        );
-        if (fs.existsSync(imagePath)) {
-          const imageId = workbook.addImage({
-            filename: imagePath,
-            extension: 'jpeg',
-          });
-          detailSheet.addImage(imageId, {
-            tl: {
-              col: 2,
-              row: currentRow - 3, // Adjust row position for image
-              colWidth: 1,
-              rowHeight: 1,
-              worksheet: detailSheet,
-            },
-            ext: { width: 150, height: 100 },
-          });
-        }
-      }
-    } catch (error) {
-      console.error(
-        `Error adding images for maintenance ${maintenance.id}:`,
-        error,
-      );
-    }
-
-    currentRow += 8; // Space for images
-  }
-}
-
-        currentRow += 2; // Add space between maintenance records
+      // Add headers for cleaning
+      const cleaningHeaders = ['No', 'Jenis Pembersihan', 'Sebelum', 'Sesudah'];
+      const headerRow = detailSheet.addRow(cleaningHeaders);
+      headerRow.eachCell((cell) => {
+        cell.style = headerStyle;
+        cell.alignment = { horizontal: 'center' };
       });
+      currentRow++;
+
+      // Add cleaning results
+      maintenance.hasilPembersihan.forEach((hp, idx) => {
+        const row = detailSheet.addRow([
+          idx + 1,
+          hp.variablePembersihan?.nama_variable || 'N/A',
+          hp.sebelum?.toString() || 'N/A',
+          hp.sesudah?.toString() || 'N/A',
+        ]);
+        row.eachCell((cell) => {
+          cell.alignment = { horizontal: 'left' };
+        });
+        currentRow++;
+      });
+      currentRow++;
     }
+
+    // Palet Photos Section
+    if (maintenance.palet_indoor || maintenance.palet_outdoor) {
+      detailSheet.mergeCells(`A${currentRow}:D${currentRow}`);
+      const paletHeaderCell = detailSheet.getCell(`A${currentRow}`);
+      paletHeaderCell.value = 'Foto Palet Unit';
+      paletHeaderCell.font = { bold: true };
+      paletHeaderCell.alignment = { horizontal: 'center' };
+      currentRow++;
+
+      // Add headers for pallet photos
+      const palletPhotoHeaders = ['No', maintenance.kategori === MaintenanceKategori.INDOOR ? 'Foto Palet Indoor' : 'Foto Palet Outdoor', '', '']; // Empty columns to reach D
+      const headerRow = detailSheet.addRow(palletPhotoHeaders);
+      headerRow.eachCell((cell) => {
+        cell.style = headerStyle;
+        cell.alignment = { horizontal: 'center' };
+      });
+      currentRow++;
+
+      // Add row for pallet photos
+      detailSheet.addRow([1, '', '', '']); // Empty columns to reach D
+      currentRow++;
+
+      try {
+        // Add Indoor Pallet Photo (only for indoor units)
+        if (maintenance.kategori === MaintenanceKategori.INDOOR && maintenance.palet_indoor) {
+          const imagePathIndoor = path.join(process.cwd(), 'uploads', maintenance.palet_indoor);
+          if (fs.existsSync(imagePathIndoor)) {
+            const imageIdIndoor = workbook.addImage({
+              filename: imagePathIndoor,
+              extension: 'jpeg',
+            });
+            detailSheet.addImage(imageIdIndoor, {
+              tl: { col: 1, row: currentRow - 1 },
+              ext: { width: 150, height: 100 },
+            });
+          }
+        }
+
+        // Add Outdoor Pallet Photo (only for outdoor units)
+        if (maintenance.kategori === MaintenanceKategori.OUTDOOR && maintenance.palet_outdoor) {
+          const imagePathOutdoor = path.join(process.cwd(), 'uploads', maintenance.palet_outdoor);
+          if (fs.existsSync(imagePathOutdoor)) {
+            const imageIdOutdoor = workbook.addImage({
+              filename: imagePathOutdoor,
+              extension: 'jpeg',
+            });
+            detailSheet.addImage(imageIdOutdoor, {
+              tl: { col: 1, row: currentRow - 1 },
+              ext: { width: 150, height: 100 },
+            });
+          }
+        }
+      } catch (error) {
+        console.error(`Error adding pallet images for maintenance ${maintenance.id}:`, error);
+      }
+      currentRow += 4; // Space for images
+      currentRow++; // Additional space after pallet photos section
+    }
+
+    // Photos Section (Separate table)
+    if (maintenance.foto?.length) {
+      detailSheet.mergeCells(`A${currentRow}:D${currentRow}`);
+      const photosHeaderCell = detailSheet.getCell(`A${currentRow}`);
+      photosHeaderCell.value = 'Dokumentasi Foto';
+      photosHeaderCell.font = { bold: true };
+      photosHeaderCell.alignment = { horizontal: 'center' };
+      currentRow++;
+
+      // Add headers for photos
+      const photoHeaders = ['No', 'Foto Sebelum', 'Foto Sesudah', '']; // Empty column to reach D
+      const headerRow = detailSheet.addRow(photoHeaders);
+      headerRow.eachCell((cell) => {
+        cell.style = headerStyle;
+        cell.alignment = { horizontal: 'center' };
+      });
+      currentRow++;
+
+      // Group photos by before/after
+      const sebelumFotos = maintenance.foto.filter((f) => f?.status === 'sebelum');
+      const sesudahFotos = maintenance.foto.filter((f) => f?.status === 'sesudah');
+      const maxFotos = Math.max(sebelumFotos.length, sesudahFotos.length);
+
+      for (let i = 0; i < maxFotos; i++) {
+        // Add row for photo names
+        detailSheet.addRow([i + 1, '', '', '']); // Empty column to reach D
+        currentRow++;
+
+        // Add photo names
+        if (sebelumFotos[i]?.nama || sesudahFotos[i]?.nama) {
+          detailSheet.addRow([
+            '', // Empty for No column
+            sebelumFotos[i]?.nama || '', // Nama foto sebelum
+            sesudahFotos[i]?.nama || '', // Nama foto sesudah
+            '', // Empty column to reach D
+          ]);
+          currentRow++;
+        }
+
+        try {
+          // Add Sebelum Foto
+          if (sebelumFotos[i]?.foto) {
+            const imagePath = path.join(process.cwd(), 'uploads', sebelumFotos[i].foto);
+            if (fs.existsSync(imagePath)) {
+              const imageId = workbook.addImage({
+                filename: imagePath,
+                extension: 'jpeg',
+              });
+              detailSheet.addImage(imageId, {
+                tl: { col: 1, row: currentRow - 3 },
+                ext: { width: 150, height: 100 },
+              });
+            }
+          }
+
+          // Add Sesudah Foto
+          if (sesudahFotos[i]?.foto) {
+            const imagePath = path.join(process.cwd(), 'uploads', sesudahFotos[i].foto);
+            if (fs.existsSync(imagePath)) {
+              const imageId = workbook.addImage({
+                filename: imagePath,
+                extension: 'jpeg',
+              });
+              detailSheet.addImage(imageId, {
+                tl: { col: 2, row: currentRow - 3 },
+                ext: { width: 150, height: 100 },
+              });
+            }
+          }
+        } catch (error) {
+          console.error(`Error adding images for maintenance ${maintenance.id}:`, error);
+        }
+        currentRow += 4; // Space for images
+      }
+    }
+
+    // Add borders around the entire detail section
+    const endRow = currentRow - 1; // End row of the entire detail section
+    for (let row = startRow; row <= endRow; row++) {
+      for (let col = 1; col <= 4; col++) {
+        const cell = detailSheet.getCell(row, col);
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
+        };
+      }
+    }
+
+    currentRow += 4; // Add space between maintenance records
+  });
+}
 
     // Set response headers
     const proyek = maintenances[0]?.unit?.ruangan?.gedung?.proyek;
@@ -714,4 +686,38 @@ if (maintenance.foto?.length) {
     });
     file.pipe(res);
   }
+  @Roles(Role.ADMIN)
+@Get('project/:projectId/total-maintenance')
+async getTotalMaintenanceByProject(
+  @Param('projectId', ParseIntPipe) projectId: number,
+  @Query('startDate') startDate?: string,
+  @Query('endDate') endDate?: string,
+) {
+  // Buat base query condition
+  const where: any = {
+    unit: {
+      ruangan: {
+        gedung: {
+          id_proyek: projectId,
+        },
+      },
+    },
+  };
+
+  // Tambahkan filter tanggal jika ada
+  if (startDate && endDate) {
+    where.tanggal = Between(new Date(startDate), new Date(endDate));
+  }
+
+  const totalMaintenance = await this.maintenanceRepo.count({
+    where,
+    relations: [
+      'unit',
+      'unit.ruangan',
+      'unit.ruangan.gedung',
+    ],
+  });
+
+  return { totalMaintenance };
+}
 }

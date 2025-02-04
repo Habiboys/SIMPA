@@ -31,6 +31,12 @@ export class MerekController {
     });
   }
 
+  @Get('total')
+  async getTotalMerek() {
+    const totalMerek = await this.merekRepo.count();
+    return { totalMerek };
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: number) {
     const merek = await this.merekRepo.findOne({ where: { id } });
@@ -61,4 +67,5 @@ export class MerekController {
     await this.merekRepo.remove(merek);
     return { message: 'Merek deleted successfully' };
   }
+
 }
