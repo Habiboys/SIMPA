@@ -18,7 +18,7 @@ const NotFound = () => {
         <h1 className="text-9xl font-bold text-primary mb-4">404</h1>
         
         {/* Error messages */}
-        <h2 className="text-2xl font-semibold mb-2">Oops! Halaman Tidak Ditemukan</h2>
+        <h2 className="text-2xl font-semibold mb-2">Oopss! Halaman Tidak Ditemukan</h2>
         <p className="text-base-content/60 mb-8">
           Maaf, halaman yang Anda cari tidak dapat ditemukan atau telah dipindahkan.
         </p>
