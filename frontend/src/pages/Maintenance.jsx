@@ -553,7 +553,7 @@ const MaintenancePage = () => {
             <div key={foto.id} className="card bg-base-200">
               <figure className="px-4 pt-4">
                 <img
-                  src={`${BASE_URL}/uploads/${foto.foto}`}
+                  src={`${BASE_URL}/maintenance/foto/${foto.foto}`}
                   alt="Foto Sebelum"
                   className="rounded-lg object-cover w-full h-48"
                 />

@@ -48,7 +48,7 @@ export class ProyekController {
     return this.proyekService.createProyek(createProyekDto);
   }
 
-    @Get('total')
+  @Get('total')
   @ApiOperation({ summary: 'Menghitung total proyek' })
   @ApiResponse({
     status: 200,

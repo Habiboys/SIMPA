@@ -8,6 +8,11 @@ async function bootstrap() {
   app.use(bodyParser.json({ limit: '50mb' }));
   app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
+
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+    prefix: '/uploads', // URL prefix for serving files
+  });
+
   app.useGlobalPipes(new ValidationPipe());
   // app.enableCors({
   //   origin: '*', // Ganti dengan URL frontend Anda

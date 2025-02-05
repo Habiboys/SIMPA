@@ -14,15 +14,15 @@ const Login = () => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
-  
+
     try {
       const response = await apiRequest("/auth/login", "POST", { username, password });
-  
+
       if (response.success) {
         // Menyimpan tokens dan user data di localStorage
         localStorage.setItem("accessToken", response.accessToken);
         localStorage.setItem("refreshToken", response.refreshToken);
-        
+
         const userData = {
           id: response.user.id,
           username: response.user.username,
@@ -30,7 +30,7 @@ const Login = () => {
         };
         localStorage.setItem("userData", JSON.stringify(userData));
         localStorage.setItem("userRole", response.user.role);
-  
+
         // Cek apakah role adalah admin
         if (response.user.role !== 'admin') {
           Swal.fire({
@@ -41,7 +41,7 @@ const Login = () => {
           });
           return;
         }
-  
+
         // Menampilkan SweetAlert sukses dan langsung ke dashboard
         Swal.fire({
           title: 'Login Berhasil!',
@@ -73,24 +73,34 @@ const Login = () => {
       setIsLoading(false);
     }
   };
-  
 
   return (
-    <div className="min-h-screen bg-base-200 flex items-center justify-center px-4">
-      <div className="card w-full max-w-md bg-base-100 shadow-xl">
+    <div
+      className="min-h-screen bg-cover bg-center flex items-center justify-center"
+      style={{
+        backgroundImage: "url('https://images.unsplash.com/photo-1560179707-f14e90ef3623?q=80&w=2073&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')", // Gambar latar belakang
+      }}
+    >
+      <div className="card w-full max-w-md bg-base-100 shadow-xl border border-gray-300">
         <div className="card-body">
-          <h2 className="card-title text-2xl font-bold justify-center mb-6">Login</h2>
+          {/* Judul dan Deskripsi */}
+          <h2 className="card-title text-3xl font-bold justify-center mb-2 text-primary">SIMPA - Suralaya Teknik</h2>
+          <p className="text-center text-base-content/80 mb-6">
+            Silakan login untuk melanjutkan.
+          </p>
 
+          {/* Error Alert */}
           {error && (
             <div className="alert alert-error mb-6">
               <span>{error}</span>
             </div>
           )}
 
+          {/* Form Login */}
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Username</span>
+                <span className="label-text font-medium text-base-content/80">Username</span>
               </label>
               <input
                 type="text"
@@ -101,10 +111,9 @@ const Login = () => {
                 required
               />
             </div>
-
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-medium">Password</span>
+                <span className="label-text font-medium text-base-content/80">Password</span>
               </label>
               <input
                 type="password"
@@ -115,7 +124,6 @@ const Login = () => {
                 required
               />
             </div>
-
             <div className="form-control mt-6">
               <button
                 type="submit"
@@ -127,6 +135,7 @@ const Login = () => {
             </div>
           </form>
 
+          {/* Register Link */}
           <div className="text-center mt-6 text-sm">
             <span className="text-base-content/70">Belum punya akun? </span>
             <Link to="/register" className="link link-primary font-medium">
