@@ -5,7 +5,7 @@ import {
   ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   PieChart, Pie, Cell, BarChart, Bar
 } from 'recharts';
-import { Building2, Calendar, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { Building2, Calendar, CheckCircle2,TrendingUp,Activity, AlertTriangle,  ArrowUpRight} from 'lucide-react';
 import { format, subMonths, startOfMonth } from 'date-fns';
 import { id } from 'date-fns/locale';
 import _ from 'lodash';
@@ -139,14 +139,12 @@ const DashboardPage = () => {
 
   if (!selectedProject) {
     return (
-      <div className="hero min-h-[400px] bg-base-200 rounded-box">
-        <div className="hero-content text-center">
-          <div className="max-w-md">
-            <h1 className="text-2xl font-bold">Selamat Datang!</h1>
-            <p className="py-4 opacity-70">
-              Silakan pilih proyek terlebih dahulu untuk melihat dashboard.
-            </p>
-          </div>
+      <div className="min-h-[400px] bg-base-200 rounded-xl p-8 flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <h1 className="text-3xl font-bold">Selamat Datang di Dashboard</h1>
+          <p className="text-lg opacity-70">
+            Silakan pilih proyek untuk memulai visualisasi data
+          </p>
         </div>
       </div>
     );
@@ -154,151 +152,187 @@ const DashboardPage = () => {
 
   if (loading) {
     return (
-      <div className="w-full h-96 flex items-center justify-center">
-        <span className="loading loading-spinner loading-lg text-primary"></span>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="space-y-4 text-center">
+          <span className="loading loading-spinner loading-lg text-primary"></span>
+          <p className="text-sm opacity-70">Memuat data...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-4xl font-bold mb-4">Dashboard</h1>
-      <p className="text-base-content/60 mb-6">
-        Proyek: {selectedProject.nama}
-      </p>
-
-      {/* Summary Cards in One Row */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-8">
-        <SummaryCard title="Jumlah Proyek" value={summaryData.totalProjects} />
-        <SummaryCard title="Total Unit" value={summaryData.totalUnits} />
-        <SummaryCard title="Total Merk AC" value={summaryData.totalMerkAC} />
-        <SummaryCard title="Total Model AC" value={summaryData.totalModelAC} />
-        <SummaryCard title="Total Gedung" value={summaryData.totalGedung} />
-        <SummaryCard title="Total Maintenance" value={summaryData.totalMaintenance} />
+    <div className="p-6 space-y-6">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-4xl font-bold">Dashboard Analytics</h1>
+          <p className="text-base-content/60 mt-2 flex items-center gap-2">
+            <Building2 className="w-4 h-4" />
+            {selectedProject.nama}
+          </p>
+        </div>
+        <div className="flex items-center gap-2 text-sm">
+          <span className="px-3 py-1 rounded-full bg-primary/10 text-primary">
+            Last updated: {format(new Date(), 'dd MMM yyyy')}
+          </span>
+        </div>
       </div>
 
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Monthly Trend Chart */}
-        <div className="card bg-base-100 shadow-xl  transition-transform duration-300 hover:scale-[1.01]">
-          <div className="card-body">
-            <h2 className="card-title mb-4 flex items-center gap-2 text">
-              <Calendar className="w-5 h-5" />
-              Tren Maintenance 6 Bulan Terakhir
-            </h2>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={monthlyTrendData}
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="maintenanceCount"
-                    stroke="#3B82F6"
-                    strokeWidth={3}
-                    dot={{ fill: '#3B82F6', r: 5 }}
-                    activeDot={{ r: 8 }}
-                    name="Maintenance"
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+      {/* Quick Stats Grid - Reduced to 3 cards per row */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <QuickStatCard
+          title="Overview Proyek"
+          value={`${summaryData.totalProjects} Proyek / ${summaryData.totalGedung} Gedung`}
+          icon={<Building2 className="w-5 h-5" />}
+          trend="+2.5%"
+        />
+        <QuickStatCard
+          title="Unit & Model"
+          value={`${summaryData.totalUnits} Unit / ${summaryData.totalModelAC} Model`}
+          icon={<Activity className="w-5 h-5" />}
+          trend="+5.2%"
+        />
+        <QuickStatCard
+          title="Total Maintenance"
+          value={summaryData.totalMaintenance}
+          icon={<CheckCircle2 className="w-5 h-5" />}
+          trend="+4.7%"
+        />
+      </div>
+
+      {/* Main Dashboard Content */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        {/* Left Column */}
+        <div className="xl:col-span-2 space-y-6">
+          {/* Trend Chart */}
+          <div className="card bg-base-100 shadow-xl">
+            <div className="card-body">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="card-title flex items-center gap-2">
+                  <Calendar className="w-5 h-5" />
+                  Tren Maintenance
+                </h2>
+                <select className="select select-sm select-bordered">
+                  <option>6 Bulan Terakhir</option>
+                  <option>12 Bulan Terakhir</option>
+                </select>
+              </div>
+              <div className="h-[400px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={monthlyTrendData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Legend />
+                    <Line
+                      type="monotone"
+                      dataKey="maintenanceCount"
+                      stroke="#3B82F6"
+                      strokeWidth={3}
+                      dot={{ fill: '#3B82F6', r: 5 }}
+                      activeDot={{ r: 8 }}
+                      name="Maintenance"
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+
+          {/* Unit Distribution Bar Chart */}
+          <div className="card bg-base-100 shadow-xl">
+            <div className="card-body">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="card-title flex items-center gap-2">
+                  <Building2 className="w-5 h-5" />
+                  Distribusi per Unit
+                </h2>
+                <button className="btn btn-sm btn-ghost">
+                  <ArrowUpRight className="w-4 h-4" />
+                </button>
+              </div>
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={unitDistributionData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" angle={-45} textAnchor="end" height={60} />
+                    <YAxis />
+                    <Tooltip content={<CustomTooltip />} />
+                    <Bar dataKey="count" fill="#F59E0B" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Distribution by Building Chart */}
-        <div className="card bg-base-100 shadow-xl  transition-transform duration-300 hover:scale-[1.01]">
-          <div className="card-body">
-            <h2 className="card-title mb-4 flex items-center gap-2 text">
-              <Building2 className="w-5 h-5" />
-              Distribusi Maintenance per Gedung
-            </h2>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={buildingData}
-                    innerRadius={60}
-                    outerRadius={100}
-                    dataKey="value"
-                    nameKey="name"
-                    label={(entry) => entry.name}
-                  >
-                    {buildingData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
+        {/* Right Column */}
+        <div className="space-y-6">
+          {/* Status Donut Chart */}
+          <div className="card bg-base-100 shadow-xl">
+            <div className="card-body">
+              <h2 className="card-title flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5" />
+                Status Maintenance
+              </h2>
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={completionStatusData}
+                      innerRadius={60}
+                      outerRadius={100}
+                      dataKey="value"
+                      nameKey="name"
+                      label={(entry) => `${entry.name}: ${entry.value}`}
+                    >
+                      {completionStatusData.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip content={<CustomTooltip />} />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Bar Chart: Distribution by Unit */}
-        <div className="card bg-base-100 shadow-xl  transition-transform duration-300 hover:scale-[1.01] col-span-1 lg:col-span-2">
-          <div className="card-body">
-            <h2 className="card-title mb-4 flex items-center gap-2 text">
-              <Building2 className="w-5 h-5" />
-              Distribusi Maintenance per Unit
-            </h2>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={unitDistributionData}
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" angle={-45} textAnchor="end" height={60} />
-                  <YAxis />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend />
-                  <Bar dataKey="count" fill="#F59E0B" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        </div>
-
-        {/* Donut Chart: Completion Status */}
-        <div className="card bg-base-100 shadow-xl  transition-transform duration-300 hover:scale-[1.01]">
-          <div className="card-body">
-            <h2 className="card-title mb-4 flex items-center gap-2 text-primary">
-              <CheckCircle2 className="w-5 h-5" />
-              Status Maintenance
-            </h2>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={completionStatusData}
-                    innerRadius={60}
-                    outerRadius={100}
-                    dataKey="value"
-                    nameKey="name"
-                    label={(entry) => `${entry.name}: ${entry.value}`}
-                  >
-                    {completionStatusData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
+          {/* Building Distribution */}
+          <div className="card bg-base-100 shadow-xl">
+            <div className="card-body">
+              <h2 className="card-title flex items-center gap-2">
+                <Building2 className="w-5 h-5" />
+                Distribusi per Gedung
+              </h2>
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={buildingData}
+                      innerRadius={60}
+                      outerRadius={100}
+                      dataKey="value"
+                      nameKey="name"
+                      label={(entry) => entry.name}
+                    >
+                      {buildingData.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip content={<CustomTooltip />} />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
             </div>
           </div>
         </div>
@@ -307,29 +341,36 @@ const DashboardPage = () => {
   );
 };
 
-// Custom Tooltip for Charts
+const QuickStatCard = ({ title, value, icon, trend }) => {
+  return (
+    <div className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300">
+      <div className="card-body p-6">
+        <div className="flex items-center justify-between">
+          <div className="rounded-lg p-2 bg-base-200">{icon}</div>
+          <span className="text-xs text-success flex items-center gap-1">
+            {trend}
+            <ArrowUpRight className="w-3 h-3" />
+          </span>
+        </div>
+        <div className="mt-4">
+          <p className="text-sm opacity-70">{title}</p>
+          <p className="text-2xl font-bold mt-1">{value}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-base-100 shadow-lg p-4 rounded-lg ">
+      <div className="bg-base-100 shadow-lg p-4 rounded-lg border border-base-300">
         <p className="text-sm font-bold">{label}</p>
         <p className="text-sm">{payload[0].name}: {payload[0].value}</p>
       </div>
     );
   }
   return null;
-};
-
-// Component untuk kartu ringkasan
-const SummaryCard = ({ title, value }) => {
-  return (
-    <div className="card bg-base-100 shadow-xl  transition-transform duration-300 hover:scale-[1.02]">
-      <div className="card-body p-4">
-        <h2 className="card-title text-base font-semibold">{title}</h2>
-        <p className="text-2xl font-bold text-center">{value}</p>
-      </div>
-    </div>
-  );
 };
 
 export default DashboardPage;

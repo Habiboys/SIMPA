@@ -474,19 +474,25 @@ const MaintenancePage = () => {
                   className={`tab tab-lg font-medium ${activeTab === 'pemeriksaan' ? 'tab-active bg-primary text-primary-content' : 'text-base-content/70'}`}
                   onClick={() => setActiveTab('pemeriksaan')}
                 >
-                  Hasil Pemeriksaan
+                  Pemeriksaan
                 </a>
                 <a 
                   className={`tab tab-lg font-medium ${activeTab === 'pembersihan' ? 'tab-active bg-primary text-primary-content' : 'text-base-content/70'}`}
                   onClick={() => setActiveTab('pembersihan')}
                 >
-                  Hasil Pembersihan
+                  Pembersihan
+                </a>
+               <a 
+                  className={`tab tab-lg font-medium ${activeTab === 'palet' ? 'tab-active bg-primary text-primary-content' : 'text-base-content/70'}`}
+                  onClick={() => setActiveTab('palet')}
+                >
+                  Foto palet
                 </a>
                 <a 
                   className={`tab tab-lg font-medium ${activeTab === 'foto' ? 'tab-active bg-primary text-primary-content' : 'text-base-content/70'}`}
                   onClick={() => setActiveTab('foto')}
                 >
-                  Foto-foto
+                  Foto
                 </a>
               </div>
 
@@ -553,7 +559,7 @@ const MaintenancePage = () => {
             <div key={foto.id} className="card bg-base-200">
               <figure className="px-4 pt-4">
                 <img
-                  src={`${BASE_URL}/maintenance/foto/${foto.foto}`}
+                  src={`${BASE_URL}/uploads/${foto.foto}`}
                   alt="Foto Sebelum"
                   className="rounded-lg object-cover w-full h-48"
                 />
@@ -591,6 +597,28 @@ const MaintenancePage = () => {
       </div>
     </div>
   </div>
+</div>
+
+<div className={`mt-6 ${activeTab !== 'palet' ? 'hidden' : ''}`}>
+
+  {/* Menampilkan foto palet */}
+  {selectedMaintenance.unit.detailModel.kategori === 'indoor' &&
+    selectedMaintenance.palet_indoor && (
+      <img
+        src={`${BASE_URL}/uploads/${selectedMaintenance.palet_indoor}`}
+        alt="Foto Palet Indoor"
+        className="rounded-lg object-cover w-full  mt-2"
+      />
+    )}
+
+  {selectedMaintenance.unit.detailModel.kategori === 'outdoor' &&
+    selectedMaintenance.palet_outdoor && (
+      <img
+        src={`${BASE_URL}/uploads/${selectedMaintenance.palet_outdoor}`}
+        alt="Foto Palet Outdoor"
+        className="rounded-lg object-cover w-full h-48 mt-2"
+      />
+    )}
 </div>
 
               <div className="modal-action">
