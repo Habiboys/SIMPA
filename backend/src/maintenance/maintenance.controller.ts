@@ -141,8 +141,7 @@ if (dto.palet_indoor) {
         return queryRunner.manager.save(hasilPembersihan);
       });
 
-      // Handle foto uploads
-      // Di dalam create method
+      
       const fotoPromises = dto.foto.map(async (f) => {
         if (!f.nama) {
           throw new BadRequestException('Nama foto harus diisi');
@@ -228,7 +227,7 @@ if (dto.palet_indoor) {
     return maintenance;
   }
 
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.LAPANGAN)
   @Get('project/:projectId')
   async findByProject(
     @Param('projectId', ParseIntPipe) projectId: number,
