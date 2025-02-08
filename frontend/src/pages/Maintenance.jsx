@@ -3,7 +3,7 @@ import { useProject } from '../contexts/ProjectContext';
 import { apiRequest, BASE_URL } from '../utils/api';
 import { 
   FileSpreadsheet, Calendar, Download, Building2,
-  ArrowUpDown
+  ArrowUpDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
@@ -17,6 +17,8 @@ const MaintenancePage = () => {
   const [selectedMaintenance, setSelectedMaintenance] = useState(null);
   const [activeTab, setActiveTab] = useState('pemeriksaan');
   const [sortConfig, setSortConfig] = useState({ field: 'tanggal', direction: 'desc' });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [showExportModal, setShowExportModal] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
   const [exportDateRange, setExportDateRange] = useState({
@@ -27,6 +29,8 @@ const MaintenancePage = () => {
     gedung: 'all',
     ruangan: 'all'
   });
+
+
 
   // Get unique gedung and ruangan lists
   const gedungList = React.useMemo(() => {
@@ -130,6 +134,7 @@ const MaintenancePage = () => {
 
     return filtered;
   };
+  
 
   
 
@@ -205,6 +210,7 @@ const MaintenancePage = () => {
     );
   }
 
+  
   return (
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
@@ -299,55 +305,58 @@ const MaintenancePage = () => {
                   <th className="text-right">Aksi</th>
                 </tr>
               </thead>
-              <tbody>
-                {loading ? (
-                  <tr>
-                    <td colSpan="6" className="text-center py-8">
-                      <span className="loading loading-spinner loading-lg"></span>
-                    </td>
-                  </tr>
-                ) : filteredAndSortedData().length === 0 ? (
-                  <tr>
-                    <td colSpan="6">
-                      <div className="text-center py-8">
-                        <FileSpreadsheet className="w-12 h-12 text-base-content/20 mx-auto mb-3" />
-                        <p className="text-base-content/60">
-                          {maintenanceData.length === 0 
-                            ? 'Belum ada data maintenance'
-                            : 'Tidak ada data yang sesuai dengan filter'}
-                        </p>
-                      </div>
-                    </td>
-                  </tr>
-                ) : (
-                  filteredAndSortedData().map((maintenance) => (
-                    <tr key={maintenance.id}>
-                      <td>{format(new Date(maintenance.tanggal), 'dd MMMM yyyy', { locale: id })}</td>
-                      <td>{maintenance.unit?.ruangan?.gedung?.nama || '-'}</td>
-                      <td>{maintenance.unit?.ruangan?.nama || '-'}</td>
-                      <td>
-                        {maintenance.unit?.detailModel?.nama_model} - {maintenance.unit?.nomor_seri}
-                      </td>
-                      <td>
-                        <div className={`badge badge-${maintenance.kategori === 'rutin' ? 'info' : 'warning'} badge-sm capitalize`}>
-                          {maintenance.kategori}
-                        </div>
-                      </td>
-                      <td>
-                        <div className="flex justify-end">
-                          <button
-                            className="btn btn-primary btn-sm"
-                            onClick={() => showDetailModal(maintenance)}
-                          >
-                            Detail
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+
+  <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan="6" className="text-center py-8">
+                  <span className="loading loading-spinner loading-lg"></span>
+                </td>
+              </tr>
+            ) : filteredAndSortedData().length === 0 ? (
+              <tr>
+                <td colSpan="6">
+                  <div className="text-center py-8">
+                    <FileSpreadsheet className="w-12 h-12 text-base-content/20 mx-auto mb-3" />
+                    <p className="text-base-content/60">
+                      {maintenanceData.length === 0 
+                        ? 'Belum ada data maintenance'
+                        : 'Tidak ada data yang sesuai dengan filter'}
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              currentItems.map((maintenance) => (
+                <tr key={maintenance.id}>
+                  <td>{format(new Date(maintenance.tanggal), 'dd MMMM yyyy', { locale: id })}</td>
+                  <td>{maintenance.unit?.ruangan?.gedung?.nama || '-'}</td>
+                  <td>{maintenance.unit?.ruangan?.nama || '-'}</td>
+                  <td>
+                    {maintenance.unit?.detailModel?.nama_model} - {maintenance.unit?.nomor_seri}
+                  </td>
+                  <td>
+                    <div className={`badge badge-${maintenance.kategori === 'rutin' ? 'info' : 'warning'} badge-sm capitalize`}>
+                      {maintenance.kategori}
+                    </div>
+                  </td>
+                  <td>
+                    <div className="flex justify-end">
+                      <button
+                        className="btn btn-primary btn-sm"
+                        onClick={() => showDetailModal(maintenance)}
+                      >
+                        Detail
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+        
+        {!loading && filteredAndSortedData().length > 0 && <PaginationControls />}
           </div>
         </div>
       </div>
