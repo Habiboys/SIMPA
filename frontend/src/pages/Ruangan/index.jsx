@@ -557,10 +557,10 @@ const Ruangan = () => {
             </div>
             <div className="form-control mt-4">
               <label className="label">
-                <span className="label-text">Nomor Lantai</span>
+                <span className="label-text">Lantai</span>
               </label>
               <input
-                type="number"
+                type="text"
                 className="input input-bordered w-full"
                 value={roomForm.lantai}
                 onChange={(e) => setRoomForm({ ...roomForm, lantai: e.target.value })}

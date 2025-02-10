@@ -20,7 +20,7 @@ function App() {
         <Routes>
           <Route element={<PublicRoute />}>
             <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            {/*<Route path="/register" element={<Register />} />*/}
           </Route>
 
           // src/App.jsx

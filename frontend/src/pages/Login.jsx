@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { apiRequest } from "../utils/api";
 import Swal from "sweetalert2"; // Import SweetAlert
+import Particles from "react-particles"; // Import Particles
+import { loadFull } from "tsparticles"; // Load full functionality of tsParticles
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -10,19 +12,92 @@ const Login = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  // Fungsi untuk inisialisasi partikel
+  const particlesInit = async (main) => {
+    await loadFull(main);
+  };
+
+  // Konfigurasi partikel
+  const particlesOptions = {
+    background: {
+      color: "#0D47A1", // Warna latar belakang partikel (biru tua)
+    },
+    fpsLimit: 60, // Batas frame per detik
+    interactivity: {
+      events: {
+        onClick: {
+          enable: true,
+          mode: "push", // Mode interaksi saat klik
+        },
+        onHover: {
+          enable: true,
+          mode: "repulse", // Mode interaksi saat hover
+        },
+        resize: true,
+      },
+      modes: {
+        push: {
+          quantity: 4, // Jumlah partikel yang ditambahkan saat klik
+        },
+        repulse: {
+          distance: 200, // Jarak partikel menjauh saat hover
+          duration: 0.4,
+        },
+      },
+    },
+    particles: {
+      color: {
+        value: "#BBDEFB", // Warna partikel (biru muda)
+      },
+      links: {
+        color: "#BBDEFB",
+        distance: 150, // Jarak antar partikel
+        enable: true,
+        opacity: 0.5,
+        width: 1,
+      },
+      collisions: {
+        enable: true, // Aktifkan tabrakan antar partikel
+      },
+      move: {
+        direction: "none",
+        enable: true,
+        outModes: {
+          default: "bounce", // Partikel akan memantul saat mencapai batas
+        },
+        random: false,
+        speed: 2, // Kecepatan partikel
+        straight: false,
+      },
+      number: {
+        density: {
+          enable: true,
+          area: 800, // Kepadatan partikel
+        },
+        value: 80, // Jumlah partikel
+      },
+      opacity: {
+        value: 0.5,
+      },
+      shape: {
+        type: "circle", // Bentuk partikel (opsi lain: square, triangle, dll.)
+      },
+      size: {
+        value: { min: 1, max: 5 }, // Ukuran partikel
+      },
+    },
+    detectRetina: true, // Deteksi retina untuk tampilan lebih tajam
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
-
     try {
       const response = await apiRequest("/auth/login", "POST", { username, password });
-
       if (response.success) {
-        // Menyimpan tokens dan user data di localStorage
         localStorage.setItem("accessToken", response.accessToken);
         localStorage.setItem("refreshToken", response.refreshToken);
-
         const userData = {
           id: response.user.id,
           username: response.user.username,
@@ -30,8 +105,6 @@ const Login = () => {
         };
         localStorage.setItem("userData", JSON.stringify(userData));
         localStorage.setItem("userRole", response.user.role);
-
-        // Cek apakah role adalah admin
         if (response.user.role !== 'admin') {
           Swal.fire({
             title: 'Akses Dilarang!',
@@ -41,20 +114,16 @@ const Login = () => {
           });
           return;
         }
-
-        // Menampilkan SweetAlert sukses dan langsung ke dashboard
         Swal.fire({
           title: 'Login Berhasil!',
           text: response.message,
           icon: 'success',
-          showConfirmButton: false, // Menyembunyikan tombol OK
-          timer: 500, // Menunggu 2 detik
+          showConfirmButton: false,
+          timer: 500,
         }).then(() => {
-          // Navigasi ke dashboard
           navigate("/dashboard");
         });
       } else {
-        // Menampilkan SweetAlert error
         Swal.fire({
           title: 'Gagal!',
           text: response.message || 'Login gagal. Silakan coba lagi.',
@@ -75,28 +144,24 @@ const Login = () => {
   };
 
   return (
-    <div
-      className="min-h-screen bg-cover bg-center flex items-center justify-center"
-      style={{
-        backgroundImage: "url('https://images.unsplash.com/photo-1560179707-f14e90ef3623?q=80&w=2073&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')", // Gambar latar belakang
-      }}
-    >
-      <div className="card w-full max-w-md bg-base-100 shadow-xl border border-gray-300">
+    <div className="min-h-screen relative flex items-center justify-center">
+      {/* Partikel Background */}
+      <Particles
+        id="tsparticles"
+        init={particlesInit}
+        options={particlesOptions}
+        className="absolute inset-0 z-0"
+      />
+      {/* Konten Login */}
+      <div className="card w-full max-w-md bg-base-100 shadow-xl border border-gray-300 z-10">
         <div className="card-body">
-          {/* Judul dan Deskripsi */}
           <h2 className="card-title text-3xl font-bold justify-center mb-2 text-primary">SIMPA - Suralaya Teknik</h2>
-          <p className="text-center text-base-content/80 mb-6">
-            Silakan login untuk melanjutkan.
-          </p>
-
-          {/* Error Alert */}
+          <p className="text-center text-base-content/80 mb-6">Silakan login untuk melanjutkan.</p>
           {error && (
             <div className="alert alert-error mb-6">
               <span>{error}</span>
             </div>
           )}
-
-          {/* Form Login */}
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="form-control">
               <label className="label">
@@ -134,14 +199,12 @@ const Login = () => {
               </button>
             </div>
           </form>
-
-          {/* Register Link */}
-          <div className="text-center mt-6 text-sm">
+{/*          <div className="text-center mt-6 text-sm">
             <span className="text-base-content/70">Belum punya akun? </span>
             <Link to="/register" className="link link-primary font-medium">
               Register
             </Link>
-          </div>
+          </div>*/}
         </div>
       </div>
     </div>
