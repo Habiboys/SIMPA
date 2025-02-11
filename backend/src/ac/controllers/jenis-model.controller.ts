@@ -7,7 +7,7 @@ import { Merek } from '../../entities/merek.entity';
 import { CreateJenisModelDto, UpdateJenisModelDto } from '../dto/jenis-model.dto';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';  // Import the RolesGuard
-import { Roles } from '../../auth/decorators/role.decorator';  // Import the Roles decorator
+import { Roles } from '../../auth/decorators/role.decorator';  // Import the Roles decorat
 import { Role } from '../../enums/role.enum';  
 
 @UseGuards(JwtAuthGuard, RolesGuard)
