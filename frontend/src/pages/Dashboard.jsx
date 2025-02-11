@@ -183,13 +183,13 @@ const DashboardPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <QuickStatCard
           title="Overview Proyek"
-          value={`${summaryData.totalProjects} Proyek / ${summaryData.totalGedung} Gedung`}
+          value={`${summaryData.totalProjects} Proyek - ${summaryData.totalGedung} Gedung`}
           icon={<Building2 className="w-5 h-5" />}
           trend="+2.5%"
         />
         <QuickStatCard
           title="Unit & Model"
-          value={`${summaryData.totalUnits} Unit / ${summaryData.totalModelAC} Model`}
+          value={`${summaryData.totalUnits} Unit - ${summaryData.totalModelAC} Model`}
           icon={<Activity className="w-5 h-5" />}
           trend="+5.2%"
         />

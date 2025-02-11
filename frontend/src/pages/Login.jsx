@@ -15,10 +15,10 @@ const Login = () => {
     await loadFull(main);
   };
 
-  // Updated particle configuration with blue theme
+  // Updated particle configuration with white background and blue particles
   const particlesOptions = {
     background: {
-      color: "#1e3a8a", // Deep blue background
+      color: "#ffffff", // White background
     },
     fpsLimit: 60,
     interactivity: {
@@ -33,8 +33,8 @@ const Login = () => {
           parallax: {
             enable: true,
             force: 60,
-            smooth: 10
-          }
+            smooth: 10,
+          },
         },
         resize: true,
       },
@@ -45,17 +45,17 @@ const Login = () => {
         grab: {
           distance: 140,
           links: {
-            opacity: 0.5
-          }
-        }
+            opacity: 0.5,
+          },
+        },
       },
     },
     particles: {
       color: {
-        value: "#93c5fd", // Light blue particles
+        value: "#1e3a8a", // Deep blue particles
       },
       links: {
-        color: "#93c5fd",
+        color: "#93c5fd", // Light blue links
         distance: 150,
         enable: true,
         opacity: 0.5,
@@ -114,21 +114,21 @@ const Login = () => {
         };
         localStorage.setItem("userData", JSON.stringify(userData));
         localStorage.setItem("userRole", response.user.role);
-        
-        if (response.user.role !== 'admin') {
+
+        if (response.user.role !== "admin") {
           Swal.fire({
-            title: 'Akses Dilarang!',
-            text: 'Hanya admin yang dapat login.',
-            icon: 'error',
-            confirmButtonText: 'OK',
+            title: "Akses Dilarang!",
+            text: "Hanya admin yang dapat login.",
+            icon: "error",
+            confirmButtonText: "OK",
           });
           return;
         }
-        
+
         Swal.fire({
-          title: 'Login Berhasil!',
+          title: "Login Berhasil!",
           text: response.message,
-          icon: 'success',
+          icon: "success",
           showConfirmButton: false,
           timer: 500,
         }).then(() => {
@@ -137,10 +137,10 @@ const Login = () => {
       }
     } catch (error) {
       Swal.fire({
-        title: 'Gagal!',
-        text: error.message || 'Terjadi kesalahan, silakan coba lagi.',
-        icon: 'error',
-        confirmButtonText: 'OK',
+        title: "Gagal!",
+        text: error.message || "Terjadi kesalahan, silakan coba lagi.",
+        icon: "error",
+        confirmButtonText: "OK",
       });
     } finally {
       setIsLoading(false);
@@ -148,22 +148,23 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center bg-gradient-to-br from-blue-900 to-blue-800">
+    <div className="min-h-screen relative flex items-center justify-center bg-white">
       <Particles
         id="tsparticles"
         init={particlesInit}
         options={particlesOptions}
         className="absolute inset-0 z-0"
       />
-      
+
       <div className="w-full max-w-md px-8 py-10 bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl z-10">
         <div className="space-y-8">
           <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold text-white">SIMPA</h1>
-            <h2 className="text-lg font-small text-blue-100">Sistem Informasi Manajemen Pemeliharaan AC</h2>
-            <h2 className="text-lg font-medium text-blue-200">CV. Suralaya Teknik</h2>
+            <h1 className="text-3xl font-bold text-blue-800">SIMPA</h1>
+            <h2 className="text-lg font-medium text-black-400">
+              Sistem Informasi Manajemen Pemeliharaan AC
+            </h2>
+            <h2 className="text-lg font-medium text-black-400">CV. Suralaya Teknik</h2>
           </div>
-
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-4">
               <div>
@@ -171,28 +172,27 @@ const Login = () => {
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg bg-white/10 border border-blue-300/30 focus:border-blue-300 focus:ring-2 focus:ring-blue-300/20 transition-all outline-none text-white placeholder:text-blue-200"
+                  className="w-full px-4 py-3 rounded-lg bg-white/10 border border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none text-blue-900 placeholder:text-blue-500"
                   placeholder="Username"
                   required
                 />
               </div>
-              
+
               <div>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg bg-white/10 border border-blue-300/30 focus:border-blue-300 focus:ring-2 focus:ring-blue-300/20 transition-all outline-none text-white placeholder:text-blue-200"
+                  className="w-full px-4 py-3 rounded-lg bg-white/10 border border-blue-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none text-blue-900 placeholder:text-blue-500"
                   placeholder="Password"
                   required
                 />
               </div>
             </div>
-
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 px-4 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors duration-200 ease-in-out disabled:opacity-70 disabled:cursor-not-allowed shadow-lg"
+              className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 ease-in-out disabled:opacity-70 disabled:cursor-not-allowed shadow-lg"
             >
               {isLoading ? (
                 <div className="flex items-center justify-center space-x-2">
