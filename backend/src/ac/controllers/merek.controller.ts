@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, NotFoundException, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, NotFoundException, UseGuards,  ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Merek } from '../../entities/merek.entity';
@@ -44,11 +44,17 @@ export class MerekController {
     return merek;
   }
 
-  @Post()
-  async create(@Body() dto: CreateMerekDto) {
-    const merek = this.merekRepo.create(dto);
-    return await this.merekRepo.save(merek);
+@Post()
+async create(@Body() dto: CreateMerekDto) {
+  // Cek apakah nama merek sudah ada
+  const existingMerek = await this.merekRepo.findOne({ where: { nama: dto.nama } });
+  if (existingMerek) {
+    throw new ConflictException('Nama merek sudah ada');
   }
+
+  const merek = this.merekRepo.create(dto);
+  return await this.merekRepo.save(merek);
+}
 
   @Put(':id')
   async update(@Param('id') id: number, @Body() dto: UpdateMerekDto) {

@@ -1,5 +1,5 @@
 // src/ac/controllers/jenis-model.controller.ts
-import { Controller, Get, Post, Put, Delete, Body, Param, NotFoundException, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, NotFoundException, UseGuards,  ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JenisModel } from '../../entities/jenis-model.entity';
@@ -48,17 +48,25 @@ export class JenisModelController {
     return jenisModel;
   }
 
-  @Post()
-  async create(@Body() dto: CreateJenisModelDto) {
-    const merek = await this.merekRepo.findOne({ where: { id: dto.id_merek } });
-    if (!merek) throw new NotFoundException('Merek not found');
+ @Post()
+async create(@Body() dto: CreateJenisModelDto) {
+  const merek = await this.merekRepo.findOne({ where: { id: dto.id_merek } });
+  if (!merek) throw new NotFoundException('Merek not found');
 
-    const jenisModel = this.jenisModelRepo.create({
-      ...dto,
-      merek: merek
-    });
-    return await this.jenisModelRepo.save(jenisModel);
+  // Cek apakah nama model sudah ada untuk merek ini
+  const existingJenisModel = await this.jenisModelRepo.findOne({
+    where: { nama_model: dto.nama_model, merek: { id: dto.id_merek } },
+  });
+  if (existingJenisModel) {
+    throw new ConflictException('Nama model sudah ada untuk merek ini');
   }
+
+  const jenisModel = this.jenisModelRepo.create({
+    ...dto,
+    merek: merek,
+  });
+  return await this.jenisModelRepo.save(jenisModel);
+}
 
   @Put(':id')
   async update(@Param('id') id: number, @Body() dto: UpdateJenisModelDto) {

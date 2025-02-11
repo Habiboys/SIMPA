@@ -122,7 +122,7 @@ const DashboardPage = () => {
   const unitDistributionData = React.useMemo(() => {
     const grouped = _.groupBy(maintenanceData, 'unit.id');
     return Object.entries(grouped).map(([id, maintenances]) => ({
-      name: maintenances[0].unit.nama || `Unit ${id}`,
+      name: maintenances[0].unit.nomor_seri || `Unit ${id}`,
       count: maintenances.length
     })).sort((a, b) => b.count - a.count); // Sort by count descending
   }, [maintenanceData]);
@@ -161,184 +161,151 @@ const DashboardPage = () => {
     );
   }
 
-  return (
-    <div className="p-6 space-y-6">
-      {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-4xl font-bold">Dashboard Analytics</h1>
-          <p className="text-base-content/60 mt-2 flex items-center gap-2">
-            <Building2 className="w-4 h-4" />
-            {selectedProject.nama}
-          </p>
-        </div>
-        <div className="flex items-center gap-2 text-sm">
-          <span className="px-3 py-1 rounded-full bg-primary/10 text-primary">
-            Last updated: {format(new Date(), 'dd MMM yyyy')}
-          </span>
-        </div>
+return (
+  <div className="p-6 space-y-6">
+    {/* Header Section */}
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+      <div>
+        <h1 className="text-4xl font-bold">Dashboard Analytics</h1>
+        <p className="text-base-content/60 mt-2 flex items-center gap-2">
+          <Building2 className="w-4 h-4" />
+          {selectedProject.nama}
+        </p>
       </div>
-
-      {/* Quick Stats Grid - Reduced to 3 cards per row */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <QuickStatCard
-          title="Overview Proyek"
-          value={`${summaryData.totalProjects} Proyek - ${summaryData.totalGedung} Gedung`}
-          icon={<Building2 className="w-5 h-5" />}
-          trend="+2.5%"
-        />
-        <QuickStatCard
-          title="Unit & Model"
-          value={`${summaryData.totalUnits} Unit - ${summaryData.totalModelAC} Model`}
-          icon={<Activity className="w-5 h-5" />}
-          trend="+5.2%"
-        />
-        <QuickStatCard
-          title="Total Maintenance"
-          value={summaryData.totalMaintenance}
-          icon={<CheckCircle2 className="w-5 h-5" />}
-          trend="+4.7%"
-        />
+      <div className="flex items-center gap-2 text-sm">
+        <span className="px-3 py-1 rounded-full bg-primary/10 text-primary">
+          Last updated: {format(new Date(), 'dd MMM yyyy')}
+        </span>
       </div>
+    </div>
 
-      {/* Main Dashboard Content */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* Left Column */}
-        <div className="xl:col-span-2 space-y-6">
-          {/* Trend Chart */}
-          <div className="card bg-base-100 shadow-xl">
-            <div className="card-body">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="card-title flex items-center gap-2">
-                  <Calendar className="w-5 h-5" />
-                  Tren Maintenance
-                </h2>
-                <select className="select select-sm select-bordered">
-                  <option>6 Bulan Terakhir</option>
-                  <option>12 Bulan Terakhir</option>
-                </select>
-              </div>
-              <div className="h-[400px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={monthlyTrendData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Legend />
-                    <Line
-                      type="monotone"
-                      dataKey="maintenanceCount"
-                      stroke="#3B82F6"
-                      strokeWidth={3}
-                      dot={{ fill: '#3B82F6', r: 5 }}
-                      activeDot={{ r: 8 }}
-                      name="Maintenance"
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          </div>
+    {/* Quick Stats Grid - Reduced to 3 cards per row */}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <QuickStatCard
+        title="Overview Proyek"
+        value={`${summaryData.totalProjects} Proyek - ${summaryData.totalGedung} Gedung`}
+        icon={<Building2 className="w-5 h-5" />}
+        trend="+2.5%"
+      />
+      <QuickStatCard
+        title="Unit & Model"
+        value={`${summaryData.totalUnits} Unit - ${summaryData.totalModelAC} Model`}
+        icon={<Activity className="w-5 h-5" />}
+        trend="+5.2%"
+      />
+      <QuickStatCard
+        title="Total Maintenance"
+        value={summaryData.totalMaintenance}
+        icon={<CheckCircle2 className="w-5 h-5" />}
+        trend="+4.7%"
+      />
+    </div>
 
-          {/* Unit Distribution Bar Chart */}
-          <div className="card bg-base-100 shadow-xl">
-            <div className="card-body">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="card-title flex items-center gap-2">
-                  <Building2 className="w-5 h-5" />
-                  Distribusi per Unit
-                </h2>
-                <button className="btn btn-sm btn-ghost">
-                  <ArrowUpRight className="w-4 h-4" />
-                </button>
-              </div>
-              <div className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={unitDistributionData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" angle={-45} textAnchor="end" height={60} />
-                    <YAxis />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Bar dataKey="count" fill="#F59E0B" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column */}
-        <div className="space-y-6">
-          {/* Status Donut Chart */}
-          <div className="card bg-base-100 shadow-xl">
-            <div className="card-body">
+    {/* Main Dashboard Content */}
+    <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      {/* Left Column */}
+      <div className="xl:col-span-2 space-y-6">
+        {/* Trend Chart */}
+        <div className="card bg-base-100 shadow-xl">
+          <div className="card-body">
+            <div className="flex items-center justify-between mb-6">
               <h2 className="card-title flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5" />
-                Status Maintenance
+                <Calendar className="w-5 h-5" />
+                Tren Maintenance
               </h2>
-              <div className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={completionStatusData}
-                      innerRadius={60}
-                      outerRadius={100}
-                      dataKey="value"
-                      nameKey="name"
-                      label={(entry) => `${entry.name}: ${entry.value}`}
-                    >
-                      {completionStatusData.map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={COLORS[index % COLORS.length]}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip content={<CustomTooltip />} />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
+              <select className="select select-sm select-bordered">
+                <option>6 Bulan Terakhir</option>
+                <option>12 Bulan Terakhir</option>
+              </select>
+            </div>
+            <div className="h-[400px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={monthlyTrendData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="maintenanceCount"
+                    stroke="#3B82F6"
+                    strokeWidth={3}
+                    dot={{ fill: '#3B82F6', r: 5 }}
+                    activeDot={{ r: 8 }}
+                    name="Maintenance"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
           </div>
+        </div>
 
-          {/* Building Distribution */}
-          <div className="card bg-base-100 shadow-xl">
-            <div className="card-body">
+        {/* Building Distribution */}
+        <div className="card bg-base-100 shadow-xl">
+          <div className="card-body">
+            <h2 className="card-title flex items-center gap-2">
+              <Building2 className="w-5 h-5" />
+              Distribusi per Gedung
+            </h2>
+            <div className="h-[400px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={buildingData}
+                    innerRadius={60}
+                    outerRadius={100}
+                    dataKey="value"
+                    nameKey="name"
+                    label={(entry) => entry.name}
+                  >
+                    {buildingData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Column */}
+      <div className="space-y-6">
+        {/* Unit Distribution Bar Chart */}
+        <div className="card bg-base-100 shadow-xl">
+          <div className="card-body">
+            <div className="flex items-center justify-between mb-6">
               <h2 className="card-title flex items-center gap-2">
                 <Building2 className="w-5 h-5" />
-                Distribusi per Gedung
+                Distribusi per Unit
               </h2>
-              <div className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={buildingData}
-                      innerRadius={60}
-                      outerRadius={100}
-                      dataKey="value"
-                      nameKey="name"
-                      label={(entry) => entry.name}
-                    >
-                      {buildingData.map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={COLORS[index % COLORS.length]}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip content={<CustomTooltip />} />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
+              <button className="btn btn-sm btn-ghost">
+                <ArrowUpRight className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="h-[400px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={unitDistributionData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" angle={-45} textAnchor="end" height={60} />
+                  <YAxis />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Bar dataKey="count" fill="#F59E0B" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 const QuickStatCard = ({ title, value, icon, trend }) => {

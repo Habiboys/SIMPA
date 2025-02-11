@@ -76,7 +76,7 @@ const UnitManagementPage = () => {
     return ruangans.filter(ruangan => {
       if (!ruangan || !ruangan.gedung) return false;
       if (filterGedung && ruangan.gedung.id !== parseInt(filterGedung)) return false;
-      if (filterLantai && ruangan.lantai !== parseInt(filterLantai)) return false;
+       if (filterLantai && ruangan.lantai.toString() !== filterLantai.toString()) return false;
       return true;
     });
   };
@@ -95,7 +95,7 @@ const UnitManagementPage = () => {
     const lantais = new Set();
     ruangans.forEach(ruangan => {
       if (ruangan?.lantai && (!filterGedung || (ruangan.gedung && ruangan.gedung.id === parseInt(filterGedung)))) {
-        lantais.add(ruangan.lantai);
+        lantais.add(ruangan.lantai.toString());
       }
     });
     return Array.from(lantais).sort((a, b) => a - b);
@@ -274,7 +274,7 @@ const UnitManagementPage = () => {
       unit.detailModel?.nama_model?.toLowerCase().includes(searchLower);
 
     const matchesGedung = !filterGedung || unit.ruangan?.gedung?.id === parseInt(filterGedung);
-    const matchesLantai = !filterLantai || unit.ruangan?.lantai === parseInt(filterLantai);
+    const matchesLantai = !filterLantai || unit.ruangan?.lantai.toString() === filterLantai.toString();
     const matchesRuangan = !filterRuangan || unit.ruangan?.id === parseInt(filterRuangan);
 
     return matchesSearch && matchesGedung && matchesLantai && matchesRuangan;
@@ -404,6 +404,7 @@ const UnitManagementPage = () => {
           <table className="table table-zebra">
             <thead>
               <tr>
+                <th>Nomor</th>
                 <th>No. Seri Unit</th>
                 <th>Model</th>
                 <th>Lokasi</th>
@@ -412,9 +413,9 @@ const UnitManagementPage = () => {
               </tr>
             </thead>
             <tbody>
-              {paginatedUnits.map((unit) => (
+              {paginatedUnits.map((unit, index) => (
                 <tr key={unit.id}>
-                  {/* <td className="font-medium">{unit.nama}</td> */}
+                   <td className="font-medium">{index + 1}</td> 
                   <td className="font-medium">{unit.nomor_seri}</td>
                   <td>
                     {unit.detailModel?.jenisModel?.merek?.nama} -{' '}

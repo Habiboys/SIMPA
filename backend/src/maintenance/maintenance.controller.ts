@@ -2,6 +2,7 @@
 import {
   Controller,
   Post,
+  Delete,
   Body,
   NotFoundException,
   BadRequestException,
@@ -52,8 +53,8 @@ export class MaintenanceController {
   @Post()
   async create(@Body() dto: CreateMaintenanceDto) {
     console.log('Endpoint /maintenance POST diakses'); 
-    this.logger.log('Endpoint /maintenance POST diakses');
-    this.logger.debug('Payload yang diterima:', dto);
+    // this.logger.log('Endpoint /maintenance POST diakses');
+    // this.logger.debug('Payload yang diterima:', dto);
     const queryRunner =
       this.maintenanceRepo.manager.connection.createQueryRunner();
 
@@ -718,5 +719,79 @@ async getTotalMaintenanceByProject(
   });
 
   return { totalMaintenance };
+}
+
+@Roles(Role.ADMIN)
+@Delete(':id')
+async remove(@Param('id', ParseIntPipe) id: number) {
+  const queryRunner = this.maintenanceRepo.manager.connection.createQueryRunner();
+  await queryRunner.connect();
+  await queryRunner.startTransaction();
+
+  try {
+    // Cari data maintenance berdasarkan ID
+    const maintenance = await this.maintenanceRepo.findOne({
+      where: { id },
+      relations: ['hasilPemeriksaan', 'hasilPembersihan', 'foto'],
+    });
+
+    if (!maintenance) {
+      throw new NotFoundException(`Maintenance with ID ${id} not found`);
+    }
+
+    // Hapus file palet_indoor jika ada
+    if (maintenance.palet_indoor) {
+      const indoorFilePath = path.join(process.cwd(), 'uploads', maintenance.palet_indoor);
+      if (fs.existsSync(indoorFilePath)) {
+        fs.unlinkSync(indoorFilePath);
+      }
+    }
+
+    // Hapus file palet_outdoor jika ada
+    if (maintenance.palet_outdoor) {
+      const outdoorFilePath = path.join(process.cwd(), 'uploads', maintenance.palet_outdoor);
+      if (fs.existsSync(outdoorFilePath)) {
+        fs.unlinkSync(outdoorFilePath);
+      }
+    }
+
+    // Hapus semua file foto terkait
+    if (maintenance.foto && maintenance.foto.length > 0) {
+      for (const foto of maintenance.foto) {
+        const fotoFilePath = path.join(process.cwd(), 'uploads', foto.foto);
+        if (fs.existsSync(fotoFilePath)) {
+          fs.unlinkSync(fotoFilePath);
+        }
+      }
+    }
+
+    // Hapus child entities
+    if (maintenance.hasilPemeriksaan && maintenance.hasilPemeriksaan.length > 0) {
+      await queryRunner.manager.remove(maintenance.hasilPemeriksaan);
+    }
+
+    if (maintenance.hasilPembersihan && maintenance.hasilPembersihan.length > 0) {
+      await queryRunner.manager.remove(maintenance.hasilPembersihan);
+    }
+
+    if (maintenance.foto && maintenance.foto.length > 0) {
+      await queryRunner.manager.remove(maintenance.foto);
+    }
+
+    // Hapus data maintenance utama
+    await queryRunner.manager.remove(maintenance);
+
+    // Commit transaksi
+    await queryRunner.commitTransaction();
+
+    return { message: 'Maintenance data deleted successfully' };
+  } catch (err) {
+    // Rollback transaksi jika terjadi error
+    await queryRunner.rollbackTransaction();
+    throw err;
+  } finally {
+    // Pastikan query runner dilepaskan
+    await queryRunner.release();
+  }
 }
 }

@@ -1,5 +1,5 @@
 // src/ac/controllers/detail-model.controller.ts
-import { Controller, Get, Post, Put, Delete, Body, Param, NotFoundException, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, NotFoundException, UseGuards,  ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DetailModel } from '../../entities/detail-model.entity';
@@ -47,19 +47,27 @@ export class DetailModelController {
     return detailModel;
   }
 
-  @Post()
-  async create(@Body() dto: CreateDetailModelDto) {
-    const jenisModel = await this.jenisModelRepo.findOne({
-      where: { id: dto.id_model }
-    });
-    if (!jenisModel) throw new NotFoundException('JenisModel not found');
+ @Post()
+async create(@Body() dto: CreateDetailModelDto) {
+  const jenisModel = await this.jenisModelRepo.findOne({
+    where: { id: dto.id_model },
+  });
+  if (!jenisModel) throw new NotFoundException('JenisModel not found');
 
-    const detailModel = this.detailModelRepo.create({
-      ...dto,
-      jenisModel: jenisModel
-    });
-    return await this.detailModelRepo.save(detailModel);
+  // Cek apakah nama detail model sudah ada untuk jenis model ini
+  const existingDetailModel = await this.detailModelRepo.findOne({
+    where: { nama_model: dto.nama_model, jenisModel: { id: dto.id_model } },
+  });
+  if (existingDetailModel) {
+    throw new ConflictException('Nama varian sudah ada untuk model ac ini');
   }
+
+  const detailModel = this.detailModelRepo.create({
+    ...dto,
+    jenisModel: jenisModel,
+  });
+  return await this.detailModelRepo.save(detailModel);
+}
 
   @Put(':id')
   async update(@Param('id') id: number, @Body() dto: UpdateDetailModelDto) {

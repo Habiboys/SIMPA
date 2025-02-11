@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useProject } from '../contexts/ProjectContext';
 import { apiRequest, BASE_URL } from '../utils/api';
 import { 
-  FileSpreadsheet, Calendar, Download, Building2,
+  FileSpreadsheet, Calendar, Download, Building2, Trash2, Eye,
   ArrowUpDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight
 } from 'lucide-react';
 import { format } from 'date-fns';
@@ -72,6 +72,8 @@ const MaintenancePage = () => {
       timerProgressBar: true
     });
   };
+  // Calculate current items for pagination
+
 
   const fetchMaintenanceData = async () => {
     try {
@@ -134,7 +136,49 @@ const MaintenancePage = () => {
 
     return filtered;
   };
-  
+  const deleteMaintenance = async (id) => {
+  try {
+    // Konfirmasi penghapusan menggunakan SweetAlert2
+    const result = await Swal.fire({
+      title: 'Apakah Anda yakin?',
+      text: 'Data maintenance ini akan dihapus secara permanen!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Ya, hapus!',
+      cancelButtonText: 'Batal',
+    });
+
+    if (result.isConfirmed) {
+      // Panggil API untuk menghapus data maintenance
+      await apiRequest(`/maintenance/${id}`, 'DELETE', null, true);
+
+      // Tampilkan notifikasi sukses
+      showAlert('Data maintenance berhasil dihapus', 'success');
+
+      // Refresh data maintenance setelah penghapusan
+      fetchMaintenanceData();
+    }
+  } catch (error) {
+    // Tampilkan notifikasi error jika penghapusan gagal
+    showAlert(error.message || 'Gagal menghapus data maintenance', 'error');
+  }
+};
+const currentItems = React.useMemo(() => {
+  const filteredData = filteredAndSortedData();
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  return filteredData.slice(startIndex, endIndex);
+}, [currentPage, itemsPerPage, filteredAndSortedData]);
+// Pagination controls
+const totalPages = Math.ceil(filteredAndSortedData().length / itemsPerPage);
+
+const handlePageChange = (page) => {
+  if (page >= 1 && page <= totalPages) {
+    setCurrentPage(page);
+  }
+};
 
   
 
@@ -193,6 +237,49 @@ const MaintenancePage = () => {
     document.getElementById('modal-detail')?.close();
     setSelectedMaintenance(null);
   };
+  // Replace the existing PaginationControls component with this one
+const PaginationControls = () => {
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = Math.min(startIndex + itemsPerPage, filteredAndSortedData().length);
+  const totalItems = filteredAndSortedData().length;
+
+  return (
+    <div className="flex justify-between items-center px-4 py-4 border-t">
+      <div className="text-sm text-base-content/70">
+        Menampilkan {startIndex + 1}-{endIndex} dari {totalItems} data
+      </div>
+      <div className="flex gap-2">
+        <button 
+          className="btn btn-sm"
+          disabled={currentPage === 1}
+          onClick={() => handlePageChange(currentPage - 1)}
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+        <div className="join">
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              className={`btn btn-sm join-item ${
+                currentPage === page ? 'btn-active' : ''
+              }`}
+              onClick={() => handlePageChange(page)}
+            >
+              {page}
+            </button>
+          ))}
+        </div>
+        <button
+          className="btn btn-sm"
+          disabled={currentPage === totalPages}
+          onClick={() => handlePageChange(currentPage + 1)}
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  );
+};
 
   if (!selectedProject) {
     return (
@@ -282,6 +369,7 @@ const MaintenancePage = () => {
             <table className="table table-zebra w-full">
               <thead>
                 <tr>
+                <th>Nomor</th>
                   <th onClick={() => handleSort('tanggal')} className="cursor-pointer">
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4" />
@@ -327,8 +415,9 @@ const MaintenancePage = () => {
                 </td>
               </tr>
             ) : (
-              currentItems.map((maintenance) => (
+              currentItems.map((maintenance, index) => (
                 <tr key={maintenance.id}>
+                  <td> {index + 1} </td>
                   <td>{format(new Date(maintenance.tanggal), 'dd MMMM yyyy', { locale: id })}</td>
                   <td>{maintenance.unit?.ruangan?.gedung?.nama || '-'}</td>
                   <td>{maintenance.unit?.ruangan?.nama || '-'}</td>
@@ -341,15 +430,19 @@ const MaintenancePage = () => {
                     </div>
                   </td>
                   <td>
-                    <div className="flex justify-end">
-                      <button
-                        className="btn btn-primary btn-sm"
-                        onClick={() => showDetailModal(maintenance)}
-                      >
-                        Detail
-                      </button>
-                    </div>
-                  </td>
+          <button
+            className="btn btn-info btn-sm mr-2"
+            onClick={() => showDetailModal(maintenance)}
+          >
+            <Eye className="w-4 h-4" />
+          </button>
+          <button
+             className="btn btn-ghost btn-sm text-error" 
+            onClick={() => deleteMaintenance(maintenance.id)}
+          >
+            <Trash2 size={16} className="text-red-500" /> {/* Warna merah */}
+          </button>
+        </td>
                 </tr>
               ))
             )}
